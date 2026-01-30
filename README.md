@@ -1,17 +1,19 @@
 # Pretty-Mermaid Skills
 
-## 简介
-为 AI 提供的 Mermaid 图表渲染 Skill，支持 SVG 和 ASCII 双格式输出，让您的文档更加生动。
+[中文](README_CN.md) | **English**
 
-## ✨ 功能特性
+## Introduction
+A Mermaid diagram rendering skill for AI, supporting both SVG and ASCII output formats to make your documentation more vivid.
 
-- 📊 **多格式支持**：支持 SVG 和 ASCII 渲染导出
-- 🎨 **丰富主题**：内置 15 种精美主题，满足不同场景需求
-- 📈 **全图表支持**：支持 Flowchart, Sequence, State, Class, ER 等 5 种常用图表
-- ⚡ **高效渲染**：支持批量并行渲染，速度飞快
-- 📚 **开箱即用**：提供完整的模板和详细文档
+## ✨ Features
 
-### 支持主题列表
+- 📊 **Multi-format Support**: SVG and ASCII rendering export
+- 🎨 **Rich Themes**: 15 built-in themes for different scenarios
+- 📈 **Full Diagram Support**: Flowchart, Sequence, State, Class, ER and more
+- ⚡ **High Performance**: Batch parallel rendering
+- 📚 **Ready to Use**: Complete templates and detailed documentation
+
+### Supported Themes
 | Light Themes | Dark Themes | Other |
 | :--- | :--- | :--- |
 | zinc-light | zinc-dark | nord |
@@ -21,9 +23,9 @@
 | solarized-light | github-dark | |
 | | solarized-dark | |
 
-## 🤖 AI 助手集成
+## 🤖 AI Assistant Integration
 
-支持与以下 AI 编程环境无缝集成，通过自然语言即可调用绘图能力：
+Seamlessly integrates with the following AI coding environments:
 
 - **Claude Code**
 - **Cursor**
@@ -31,29 +33,30 @@
 - **Antigravity**
 - **OpenCode**
 - **Codex**
+- **qoder**
 
-## 🚀 安装步骤
+## 🚀 Installation
 
-### 一键安装
+### One-click Install
 ```bash
 npx skills add https://github.com/imxv/Preety-mermaid-skills
 ```
 
-### 验证安装
+### Verify Installation
 ```bash
 cd Pretty-mermaid
 node scripts/themes.mjs
 ```
-> **提示**：首次运行时会自动安装依赖，只需确保您的环境中有 Node.js。
+> **Note**: Dependencies will be auto-installed on first run. Just ensure Node.js is available.
 
-## 📖 快速开始
+## 📖 Quick Start
 
-### 列出可用主题
+### List Available Themes
 ```bash
 node scripts/themes.mjs
 ```
 
-### 渲染单个图表
+### Render Single Diagram
 ```bash
 node scripts/render.mjs \
   --input diagram.mmd \
@@ -61,7 +64,7 @@ node scripts/render.mjs \
   --theme tokyo-night
 ```
 
-### 批量渲染
+### Batch Render
 ```bash
 node scripts/batch.mjs \
   --input-dir ./diagrams \
@@ -69,23 +72,23 @@ node scripts/batch.mjs \
   --theme dracula
 ```
 
-## 📂 使用示例
+## 📂 Examples
 
-查看 `assets/example_diagrams/` 目录下的 5 个模板文件，快速上手：
-- `flowchart.mmd` - 流程图
-- `sequence.mmd` - 时序图
-- `state.mmd` - 状态图
-- `class.mmd` - 类图
-- `er.mmd` - ER 图
+Check the 5 template files in `assets/example_diagrams/`:
+- `flowchart.mmd` - Flowchart
+- `sequence.mmd` - Sequence Diagram
+- `state.mmd` - State Diagram
+- `class.mmd` - Class Diagram
+- `er.mmd` - ER Diagram
 
-## 📚 完整文档
-详细使用指南请参阅 [SKILL.md](SKILL.md)
+## 📚 Documentation
+See [SKILL.md](SKILL.md) for detailed usage guide.
 
-## ⚙️ 系统要求
+## ⚙️ Requirements
 - Node.js 14+
 
-## 📄 许可证
+## 📄 License
 MIT License
 
-## 🙏 致谢
-基于 [beautiful-mermaid](https://github.com/lukilabs/beautiful-mermaid) 项目
+## 🙏 Acknowledgments
+Based on [beautiful-mermaid](https://github.com/lukilabs/beautiful-mermaid)

@@ -1,6 +1,6 @@
 # Pretty-Mermaid Skills
 
-[中文](README_CN.md) | **English**
+**English** ｜ [中文](README_CN.md)
 
 ## Introduction
 A Mermaid diagram rendering skill for AI, supporting both SVG and ASCII output formats to make your documentation more vivid.

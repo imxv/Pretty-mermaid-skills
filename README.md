@@ -23,7 +23,7 @@ A Mermaid diagram rendering skill for AI, supporting both SVG and ASCII output f
 
 - 📊 **Multi-format Support**: SVG and ASCII rendering export
 - 🎨 **Rich Themes**: 15 built-in themes for different scenarios
-- 📈 **Full Diagram Support**: Flowchart, Sequence, State, Class, ER and more
+- 📈 **Full Diagram Support**: 20+ diagram types across Software, Process, Business, and Data Analytics categories
 - ⚡ **High Performance**: Batch parallel rendering
 - 📚 **Ready to Use**: Complete templates and detailed documentation
 
@@ -88,12 +88,13 @@ node scripts/batch.mjs \
 
 ## 📂 Examples
 
-Check the 5 template files in `assets/example_diagrams/`:
-- `flowchart.mmd` - Flowchart
-- `sequence.mmd` - Sequence Diagram
-- `state.mmd` - State Diagram
-- `class.mmd` - Class Diagram
-- `er.mmd` - ER Diagram
+Explore the template files in `assets/example_diagrams/` covering 20+ diagram types across 4 categories:
+- **Software & Architecture**: Class, ER, Architecture, C4 Context, Git Graph, Packet
+- **Process & Flow**: Flowchart, Sequence, State, Sankey, ZenUML
+- **Business & Planning**: Gantt, Mindmap, Timeline, Journey, Requirement
+- **Data Analytics & Charts**: Pie, XY Chart, Quadrant, Radar, Venn
+
+Find detailed documentation for each type in `references/types/`.
 
 ## 📚 Documentation
 See [SKILL.md](SKILL.md) for detailed usage guide.

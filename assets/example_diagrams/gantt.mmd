@@ -1,0 +1,13 @@
+gantt
+    title Example Project Plan
+    dateFormat  YYYY-MM-DD
+    axisFormat  %m-%d
+    excludes    weekends
+
+    section Planning
+        Requirements gathering :done, req1, 2024-01-01, 2024-01-05
+        Design phase           :active, des1, after req1, 5d
+
+    section Development
+        Backend API            :dev1, after des1, 10d
+        Frontend UI            :dev2, after des1, 8d

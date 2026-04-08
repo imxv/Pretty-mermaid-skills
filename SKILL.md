@@ -2,11 +2,11 @@
 name: pretty-mermaid
 description: |
   Render beautiful Mermaid diagrams as SVG or ASCII art using the beautiful-mermaid library.
-  Supports 15+ themes, 5 diagram types (flowchart, sequence, state, class, ER), and ultra-fast rendering.
+  Supports 15+ themes, 20+ diagram types (including flowcharts, architecture, gantt, mindmaps, and data charts), and ultra-fast rendering.
 
   Use this skill when:
   1. User asks to "render a mermaid diagram" or provides .mmd files
-  2. User requests "create a flowchart/sequence diagram/state diagram"
+  2. User requests "create a [type of diagram]" (e.g. flowchart, architecture, timeline, mindmap, pie chart, etc.)
   3. User wants to "apply a theme" or "beautify a diagram"
   4. User needs to "batch process multiple diagrams"
   5. User mentions "ASCII diagram" or "terminal-friendly diagram"
@@ -174,55 +174,48 @@ node scripts/render.mjs \
 
 ### Diagram Type Reference
 
-For detailed syntax and best practices, see [DIAGRAM_TYPES.md](references/DIAGRAM_TYPES.md).
+For detailed syntax and best practices, see the specific reference file for the diagram type you need in `references/types/`.
 
-**Quick reference:**
+**💻 Software & Architecture**
+- [Class Diagram](references/types/class.md) - Object models, relationships
+- [ER Diagram](references/types/er.md) - Database schema
+- [Architecture](references/types/architecture.md) - System architecture layout (experimental)
+- [C4 Context](references/types/c4.md) - C4 model architecture (PlantUML compatible)
+- [Git Graph](references/types/git.md) - Git branches, commits, and merges
+- [Packet](references/types/packet.md) - Network data packet layout
 
-**Flowchart** - Processes, workflows, decision trees
-```mermaid
-flowchart LR
-    A[Start] --> B{Decision}
-    B -->|Yes| C[Action]
-    B -->|No| D[End]
-```
+**🔄 Process & Flow**
+- [Flowchart](references/types/flowchart.md) - General processes, workflows, decision trees
+- [Sequence](references/types/sequence.md) - API calls, chronological interactions
+- [State](references/types/state.md) - Application states, lifecycle, FSM
+- [Sankey](references/types/sankey.md) - Value/energy flows between nodes
+- [ZenUML](references/types/zenuml.md) - Code-like alternative syntax for sequence diagrams
 
-**Sequence** - API calls, interactions, message flows
-```mermaid
-sequenceDiagram
-    User->>Server: Request
-    Server-->>User: Response
-```
+**📊 Business & Planning**
+- [Gantt](references/types/gantt.md) - Project timelines, scheduling, task dependencies
+- [Mindmap](references/types/mindmap.md) - Hierarchical brainstorming, structures
+- [Timeline](references/types/timeline.md) - Chronological events, history
+- [Journey](references/types/journey.md) - User experience mapping over time
+- [Requirement](references/types/requirement.md) - SysML requirements modeling
 
-**State** - Application states, lifecycle, FSM
-```mermaid
-stateDiagram-v2
-    [*] --> Idle
-    Idle --> Loading
-    Loading --> [*]
-```
-
-**Class** - Object models, architecture, relationships
-```mermaid
-classDiagram
-    User --> Post: creates
-    Post --> Comment: has
-```
-
-**ER** - Database schema, data models
-```mermaid
-erDiagram
-    USER ||--o{ ORDER : places
-    ORDER ||--|{ ORDER_ITEM : contains
-```
+**📈 Data Analytics & Charts**
+- [Pie Chart](references/types/pie.md) - Proportional parts of a whole
+- [XY Chart](references/types/xy.md) - Line and bar charts on X/Y axes
+- [Quadrant Chart](references/types/quadrant.md) - 2x2 matrix plotting
+- [Radar Chart](references/types/radar.md) - Multi-variable comparison (experimental)
+- [Venn Diagram](references/types/venn.md) - Set overlaps and unions (experimental)
 
 ### From User Requirements
 
 **Step 1: Identify diagram type**
-- **Process/workflow** → Flowchart
+- **Process/decision/workflow** → Flowchart
+- **Project schedule/tasks** → Gantt
 - **API/interaction** → Sequence
-- **States/lifecycle** → State
-- **Object model** → Class
-- **Database** → ER
+- **Brainstorming/hierarchy** → Mindmap
+- **System layout/C4** → Architecture / C4
+- **Database schema** → ER
+- **User experience** → Journey
+- **Data distribution** → Pie / XY Chart
 
 **Step 2: Create diagram file**
 ```bash
@@ -473,11 +466,10 @@ Executable Node.js scripts for rendering operations:
 - `batch.mjs` - Batch processing script
 - `themes.mjs` - Theme listing utility
 
-### references/
+### references/types/
 Documentation to inform diagram creation:
-- `THEMES.md` - Detailed theme reference with examples
-- `DIAGRAM_TYPES.md` - Comprehensive syntax guide for all diagram types
-- `api_reference.md` - beautiful-mermaid API documentation
+- Detailed syntax guides for all 20+ supported diagram types
+- Examples and best practices for each format
 
 ### assets/
 Template files for quick diagram creation:

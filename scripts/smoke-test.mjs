@@ -32,6 +32,19 @@ for (const file of files) {
 const cliTestDir = mkdtempSync(join(tmpdir(), 'pretty-mermaid-smoke-'));
 const flowchartPath = join(examplesDir, 'flowchart.mmd');
 const xychartPath = join(examplesDir, 'xychart.mmd');
+const customColorArgs = [
+  '--bg', '#ffffff',
+  '--fg', '#123456',
+  '--line', '#abcdef',
+  '--accent', '#fedcba',
+  '--border', '#0f0f0f',
+];
+const customColorCodes = [
+  '\u001b[38;2;18;52;86m',
+  '\u001b[38;2;171;205;239m',
+  '\u001b[38;2;254;220;186m',
+  '\u001b[38;2;15;15;15m',
+];
 
 try {
   for (const themeName of inheritedThemeNames) {
@@ -100,8 +113,38 @@ try {
     readFileSync(join(batchThemedAsciiDir, 'flowchart.txt'), 'utf8'),
     /\u001b\[38;2;248;248;242m/,
   );
+
+  const customAsciiPath = join(cliTestDir, 'custom.txt');
+  const renderCustomAsciiResult = spawnSync(process.execPath, [
+    join(scriptsDir, 'render.mjs'),
+    '--input', flowchartPath,
+    '--output', customAsciiPath,
+    '--format', 'ascii',
+    '--color-mode', 'truecolor',
+    ...customColorArgs,
+  ], { encoding: 'utf8' });
+  assert.equal(renderCustomAsciiResult.status, 0, renderCustomAsciiResult.stderr);
+  const customAscii = readFileSync(customAsciiPath, 'utf8');
+  for (const colorCode of customColorCodes) {
+    assert.ok(customAscii.includes(colorCode), `render.mjs omitted custom ASCII color ${colorCode}`);
+  }
+
+  const batchCustomAsciiDir = join(cliTestDir, 'batch-custom');
+  const batchCustomAsciiResult = spawnSync(process.execPath, [
+    join(scriptsDir, 'batch.mjs'),
+    '--input-dir', examplesDir,
+    '--output-dir', batchCustomAsciiDir,
+    '--format', 'ascii',
+    '--color-mode', 'truecolor',
+    ...customColorArgs,
+  ], { encoding: 'utf8' });
+  assert.equal(batchCustomAsciiResult.status, 0, batchCustomAsciiResult.stderr);
+  const batchCustomAscii = readFileSync(join(batchCustomAsciiDir, 'flowchart.txt'), 'utf8');
+  for (const colorCode of customColorCodes) {
+    assert.ok(batchCustomAscii.includes(colorCode), `batch.mjs omitted custom ASCII color ${colorCode}`);
+  }
 } finally {
   rmSync(cliTestDir, { recursive: true, force: true });
 }
 
-console.log(`Smoke tests passed: ${files.length} diagrams x 2 formats, 15 themes, CLI theme and interactive coverage.`);
+console.log(`Smoke tests passed: ${files.length} diagrams x 2 formats, 15 themes, CLI named/custom colors and interactive coverage.`);

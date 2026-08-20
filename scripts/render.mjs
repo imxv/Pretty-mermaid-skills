@@ -11,15 +11,21 @@ const skillRoot = join(__dirname, '..');
 function toAsciiTheme(colors) {
   if (!colors) return undefined;
 
+  const border = colors.border ?? colors.fg;
+  const line = colors.line ?? colors.fg;
+  const arrow = colors.accent ?? colors.line ?? colors.fg;
+  const corner = colors.border ?? colors.line ?? colors.fg;
+  const junction = colors.accent ?? colors.border ?? colors.line ?? colors.fg;
+
   return {
-    fg: colors.fg,
-    border: colors.border ?? colors.fg,
-    line: colors.line ?? colors.fg,
-    arrow: colors.accent ?? colors.line ?? colors.fg,
-    accent: colors.accent ?? colors.fg,
-    bg: colors.bg,
-    corner: colors.border ?? colors.line ?? colors.fg,
-    junction: colors.accent ?? colors.border ?? colors.line ?? colors.fg,
+    ...(colors.fg && { fg: colors.fg }),
+    ...(border && { border }),
+    ...(line && { line }),
+    ...(arrow && { arrow }),
+    ...(colors.accent && { accent: colors.accent }),
+    ...(colors.bg && { bg: colors.bg }),
+    ...(corner && { corner }),
+    ...(junction && { junction }),
   };
 }
 
@@ -58,8 +64,8 @@ function parseArgs() {
     output: null,
     format: 'svg',
     theme: null,
-    bg: '#FFFFFF',
-    fg: '#27272A',
+    bg: null,
+    fg: null,
     font: 'Inter',
     transparent: false,
     useAscii: false,
@@ -155,6 +161,14 @@ async function main() {
     throw new Error(`Unknown theme: ${opts.theme}. Run node scripts/themes.mjs to list themes.`);
   }
   const theme = opts.theme ? THEMES[opts.theme] : undefined;
+  const customColors = {
+    ...(opts.bg && { bg: opts.bg }),
+    ...(opts.fg && { fg: opts.fg }),
+    ...(opts.line && { line: opts.line }),
+    ...(opts.accent && { accent: opts.accent }),
+    ...(opts.border && { border: opts.border }),
+  };
+  const asciiColors = theme || (Object.keys(customColors).length > 0 ? customColors : undefined);
 
   if (opts.format === 'ascii') {
     const ascii = renderMermaidASCII(input, {
@@ -163,7 +177,7 @@ async function main() {
       paddingY: opts.paddingY,
       boxBorderPadding: opts.boxBorderPadding,
       colorMode: opts.colorMode,
-      theme: toAsciiTheme(theme),
+      theme: toAsciiTheme(asciiColors),
     });
     if (opts.output) {
       writeFileSync(opts.output, ascii);
@@ -173,8 +187,8 @@ async function main() {
     }
   } else {
     const colors = theme || {
-      bg: opts.bg,
-      fg: opts.fg,
+      bg: opts.bg ?? '#FFFFFF',
+      fg: opts.fg ?? '#27272A',
       ...(opts.line && { line: opts.line }),
       ...(opts.accent && { accent: opts.accent }),
       ...(opts.muted && { muted: opts.muted }),

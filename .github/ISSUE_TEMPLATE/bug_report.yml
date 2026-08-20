@@ -1,0 +1,68 @@
+name: Bug report
+description: Report a reproducible rendering, CLI, or documentation problem
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for taking the time to report a problem. Do not include security-sensitive details here; follow SECURITY.md instead.
+  - type: input
+    id: version
+    attributes:
+      label: Pretty Mermaid version or commit
+      placeholder: v1.0.0 or a commit SHA
+    validations:
+      required: true
+  - type: input
+    id: node
+    attributes:
+      label: Node.js version
+      placeholder: v20.20.2
+    validations:
+      required: true
+  - type: dropdown
+    id: output
+    attributes:
+      label: Output format
+      options:
+        - SVG
+        - Unicode or ASCII
+        - Both
+        - Documentation only
+    validations:
+      required: true
+  - type: textarea
+    id: source
+    attributes:
+      label: Minimal Mermaid source
+      description: Include Mermaid source when applicable. Remove private or sensitive data.
+      render: mermaid
+  - type: textarea
+    id: command
+    attributes:
+      label: Command and options
+      description: Include the command and options when applicable.
+      render: shell
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: Include the full error message or a screenshot when useful.
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Pre-submission checks
+      options:
+        - label: I searched existing issues and did not find a duplicate.
+          required: true
+        - label: I removed secrets and private data from the example.
+          required: true

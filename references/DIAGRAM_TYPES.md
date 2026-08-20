@@ -1,5 +1,15 @@
 # Mermaid Diagram Types Reference
 
+## Contents
+
+- [Flowchart / Graph](#flowchart--graph)
+- [Sequence Diagram](#sequence-diagram)
+- [State Diagram](#state-diagram)
+- [Class Diagram](#class-diagram)
+- [ER Diagram](#er-diagram)
+- [XY Chart](#xy-chart)
+- [General Best Practices](#general-best-practices)
+
 ## Flowchart / Graph
 
 ### Basic Syntax

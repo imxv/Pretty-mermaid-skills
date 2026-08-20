@@ -9,11 +9,12 @@
 ![Pretty Mermaid 将 Mermaid 源码转换为带主题的 SVG 和终端 ASCII 图表](assets/social-preview.png)
 
 [![skills.sh](https://skills.sh/b/imxv/pretty-mermaid-skills)](https://www.skills.sh/imxv/pretty-mermaid-skills/pretty-mermaid)
+[![CI](https://github.com/imxv/Pretty-mermaid-skills/actions/workflows/ci.yml/badge.svg)](https://github.com/imxv/Pretty-mermaid-skills/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Node.js Version](https://img.shields.io/badge/node-%3E%3D14-brightgreen)](https://nodejs.org/)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D16-brightgreen)](https://nodejs.org/)
 [![GitHub stars](https://img.shields.io/github/stars/imxv/Pretty-mermaid-skills?style=social)](https://github.com/imxv/Pretty-mermaid-skills)
 
-**中文** | [English](README.md)
+**中文** ｜ [English](README.md) ｜ [日本語](README_JA.md)
 
 </div>
 
@@ -50,6 +51,15 @@ npx skills add imxv/pretty-mermaid-skills@pretty-mermaid -g -y
 | solarized-light | github-dark | |
 | | solarized-dark | |
 
+## 🎨 主题效果图库
+
+在[完整的 15 主题效果图库](docs/THEME_GALLERY.md)中，对比同一张流程图在所有内置主题下的效果。
+
+<p align="center">
+  <img src="assets/theme_gallery/tokyo-night.svg" alt="Tokyo Night 主题预览" width="49%">
+  <img src="assets/theme_gallery/github-light.svg" alt="GitHub Light 主题预览" width="49%">
+</p>
+
 ## 🤖 AI 助手集成
 
 支持与以下 AI 编程环境无缝集成，通过自然语言即可调用绘图能力：
@@ -71,10 +81,9 @@ npx skills add imxv/pretty-mermaid-skills@pretty-mermaid -g -y
 
 ### 验证安装
 ```bash
-cd Pretty-mermaid
-node scripts/themes.mjs
+npx skills list -g
 ```
-> **提示**：首次运行时会自动安装依赖，只需确保您的环境中有 Node.js。
+确认全局 Skill 列表中包含 `pretty-mermaid`。需要 Node.js 16 或更高版本。
 
 ## 📖 快速开始
 
@@ -112,10 +121,20 @@ node scripts/batch.mjs \
 渲染器同时支持中日韩状态名称、多行标签、`linkStyle`、可配置的 ELK 布局间距、XY 图交互提示，以及带 ANSI 颜色的终端输出。
 
 ## 📚 完整文档
-详细使用指南请参阅 [SKILL.md](SKILL.md)
+
+- [Skill 使用指南](SKILL.md)
+- [主题效果图库](docs/THEME_GALLERY.md)
+- [图表语法参考](references/DIAGRAM_TYPES.md)
+- [主题与自定义配色参考](references/THEMES.md)
+- [beautiful-mermaid API 参考](references/api_reference.md)
+- [版本发布流程](RELEASING.md)
+
+## 🤝 社区
+
+参与项目前请阅读[贡献指南](CONTRIBUTING.md)；提交敏感问题前请先查看[安全策略](SECURITY.md)。版本记录见[更新日志](CHANGELOG.md)。
 
 ## ⚙️ 系统要求
-- Node.js 14+
+- Node.js 16+
 
 ## 📄 许可证
 MIT License

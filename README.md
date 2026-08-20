@@ -9,11 +9,12 @@ Turn Mermaid source into polished SVGs and terminal-ready ASCII—locally, witho
 ![Pretty Mermaid converts Mermaid source into themed SVG and terminal ASCII diagrams](assets/social-preview.png)
 
 [![skills.sh](https://skills.sh/b/imxv/pretty-mermaid-skills)](https://www.skills.sh/imxv/pretty-mermaid-skills/pretty-mermaid)
+[![CI](https://github.com/imxv/Pretty-mermaid-skills/actions/workflows/ci.yml/badge.svg)](https://github.com/imxv/Pretty-mermaid-skills/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Node.js Version](https://img.shields.io/badge/node-%3E%3D14-brightgreen)](https://nodejs.org/)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D16-brightgreen)](https://nodejs.org/)
 [![GitHub stars](https://img.shields.io/github/stars/imxv/Pretty-mermaid-skills?style=social)](https://github.com/imxv/Pretty-mermaid-skills)
 
-**English** ｜ [中文](README_CN.md)
+**English** ｜ [中文](README_CN.md) ｜ [日本語](README_JA.md)
 
 </div>
 
@@ -50,6 +51,15 @@ npx skills add imxv/pretty-mermaid-skills@pretty-mermaid -g -y
 | solarized-light | github-dark | |
 | | solarized-dark | |
 
+## 🎨 Theme Gallery
+
+Compare the same flowchart across every built-in theme in the [complete 15-theme gallery](docs/THEME_GALLERY.md).
+
+<p align="center">
+  <img src="assets/theme_gallery/tokyo-night.svg" alt="Tokyo Night theme preview" width="49%">
+  <img src="assets/theme_gallery/github-light.svg" alt="GitHub Light theme preview" width="49%">
+</p>
+
 ## 🤖 AI Assistant Integration
 
 Seamlessly integrates with the following AI coding environments:
@@ -71,10 +81,9 @@ npx skills add imxv/pretty-mermaid-skills@pretty-mermaid -g -y
 
 ### Verify Installation
 ```bash
-cd Pretty-mermaid
-node scripts/themes.mjs
+npx skills list -g
 ```
-> **Note**: Dependencies will be auto-installed on first run. Just ensure Node.js is available.
+Confirm that `pretty-mermaid` appears in the global skill list. Node.js 16 or newer is required.
 
 ## 📖 Quick Start
 
@@ -112,10 +121,20 @@ Check the 6 template files in `assets/example_diagrams/`:
 The renderer also supports CJK state names, multiline labels, `linkStyle`, configurable ELK layout spacing, interactive XY chart tooltips, and ANSI-colored terminal output.
 
 ## 📚 Documentation
-See [SKILL.md](SKILL.md) for detailed usage guide.
+
+- [Skill usage guide](SKILL.md)
+- [Theme gallery](docs/THEME_GALLERY.md)
+- [Diagram syntax reference](references/DIAGRAM_TYPES.md)
+- [Theme and custom color reference](references/THEMES.md)
+- [beautiful-mermaid API reference](references/api_reference.md)
+- [Release process](RELEASING.md)
+
+## 🤝 Community
+
+Read the [contribution guide](CONTRIBUTING.md), report problems with the issue templates, and review the [security policy](SECURITY.md) before sharing sensitive findings. Release history is tracked in the [changelog](CHANGELOG.md).
 
 ## ⚙️ Requirements
-- Node.js 14+
+- Node.js 16+
 
 ## 📄 License
 MIT License

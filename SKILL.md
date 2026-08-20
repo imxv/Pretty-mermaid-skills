@@ -12,536 +12,173 @@ description: |
 
 # Pretty Mermaid
 
-Render stunning, professionally-styled Mermaid diagrams with one command. Supports SVG for web/docs and ASCII for terminals.
+Create or render Mermaid diagrams with the bundled Node.js CLI. Use SVG for documentation and presentations; use ASCII or Unicode for terminals and plain text.
 
-## Quick Start
+## Working directory
 
-### Render a Single Diagram
+Treat the directory containing this file as `<skill-root>`. Run bundled scripts from that directory, or invoke them with absolute paths. Keep user source and rendered output in the user's requested location; do not copy the renderer into their project.
 
-**From a file:**
-```bash
-node scripts/render.mjs \
-  --input diagram.mmd \
-  --output diagram.svg \
-  --format svg \
-  --theme tokyo-night
-```
+## Workflow
 
-**From user-provided Mermaid code:**
-1. Save the code to a `.mmd` file
-2. Run the render script with desired theme
+1. Determine whether the user supplied Mermaid source or needs a diagram authored from prose.
+2. Choose the diagram type and output format from the tables below.
+3. Read only the relevant reference file when syntax, theme selection, or API behavior needs more detail.
+4. Save new source as a `.mmd` file, preserving user terminology and relationships.
+5. Render with a named theme or explicit colors.
+6. Inspect the result. Fix syntax, clipping, crowded layout, or unclear labels and render again.
+7. Return the source and output paths, plus the selected format and theme.
 
-### Batch Render Multiple Diagrams
+Do not overwrite an existing source or output file unless the user asked for replacement.
 
-```bash
-node scripts/batch.mjs \
-  --input-dir ./diagrams \
-  --output-dir ./output \
-  --format svg \
-  --theme dracula \
-  --workers 4
-```
+## Choose a diagram type
 
-### ASCII Output (Terminal-Friendly)
+| Need | Diagram type | Starter |
+| --- | --- | --- |
+| Process, decision tree, architecture | Flowchart | `flowchart LR` |
+| API calls, messages, interactions | Sequence | `sequenceDiagram` |
+| Lifecycle or finite-state machine | State | `stateDiagram-v2` |
+| Classes, modules, relationships | Class | `classDiagram` |
+| Database entities and cardinality | ER | `erDiagram` |
+| Bars, lines, trends, comparisons | XY chart | `xychart-beta` |
 
-```bash
-node scripts/render.mjs \
-  --input diagram.mmd \
-  --format ascii \
-  --use-ascii \
-  --color-mode none
-```
+Read `references/DIAGRAM_TYPES.md` when authoring non-trivial Mermaid syntax.
 
----
+## Choose an output
 
-## Workflow Decision Tree
+| Output | Best for | Notes |
+| --- | --- | --- |
+| SVG | READMEs, docs, slides, websites | Scalable, themed, supports transparency |
+| Unicode | Modern terminals and readable text previews | Default ASCII renderer output |
+| Plain ASCII | Logs and restricted terminals | Add `--use-ascii` |
+| ANSI-colored text | Interactive terminals | Set `--color-mode` |
 
-**Step 1: What does the user want?**
-- **Render existing Mermaid code** → Go to [Rendering](#rendering-diagrams)
-- **Create new diagram** → Go to [Creating](#creating-diagrams)
-- **Apply/change theme** → Go to [Theming](#theming)
-- **Batch process** → Go to [Batch Rendering](#batch-rendering)
+## Core commands
 
-**Step 2: Choose output format**
-- **SVG** (web, docs, presentations) → `--format svg`
-- **ASCII** (terminal, logs, plain text) → `--format ascii`
+Run these from `<skill-root>`.
 
-**Step 3: Select theme**
-- **Dark mode docs** → `tokyo-night` (recommended)
-- **Light mode docs** → `github-light`
-- **Vibrant colors** → `dracula`
-- **See all themes** → Run `node scripts/themes.mjs`
-
----
-
-## Rendering Diagrams
-
-### From File
-
-When user provides a `.mmd` file or Mermaid code block:
-
-1. **Save to file** (if code block):
-   ```bash
-   cat > diagram.mmd << 'EOF'
-   flowchart LR
-       A[Start] --> B[End]
-   EOF
-   ```
-
-2. **Render with theme**:
-   ```bash
-   node scripts/render.mjs \
-     --input diagram.mmd \
-     --output diagram.svg \
-     --theme tokyo-night
-   ```
-
-3. **Verify output**:
-   - SVG: Open in browser or embed in docs
-   - ASCII: Display in terminal
-
-### Output Formats
-
-**SVG (Scalable Vector Graphics)**
-- Best for: Web pages, documentation, presentations
-- Features: Full color support, transparency, scalable
-- Usage: `--format svg --output diagram.svg`
-
-**ASCII (Terminal Art)**
-- Best for: Terminal output, plain text logs, README files
-- Features: Pure text, works anywhere, no dependencies
-- Usage: `--format ascii` (prints to stdout)
-- Options:
-  - `--use-ascii` - Use pure ASCII (no Unicode)
-  - `--padding-x 5` - Horizontal spacing
-  - `--padding-y 5` - Vertical spacing
-  - `--color-mode auto` - Terminal colors (`none`, `auto`, `ansi16`, `ansi256`, `truecolor`, or `html`)
-
-### Advanced Options
-
-**Custom Colors** (overrides theme):
-```bash
-node scripts/render.mjs \
-  --input diagram.mmd \
-  --bg "#1a1b26" \
-  --fg "#a9b1d6" \
-  --accent "#7aa2f7" \
-  --output custom.svg
-```
-
-**Transparent Background**:
-```bash
-node scripts/render.mjs \
-  --input diagram.mmd \
-  --transparent \
-  --output transparent.svg
-```
-
-**Custom Font**:
-```bash
-node scripts/render.mjs \
-  --input diagram.mmd \
-  --font "JetBrains Mono" \
-  --output custom-font.svg
-```
-
-**Layout and interactive XY charts**:
-```bash
-node scripts/render.mjs \
-  --input chart.mmd \
-  --node-spacing 32 \
-  --layer-spacing 56 \
-  --interactive \
-  --output chart.svg
-```
-
-Use `--padding`, `--node-spacing`, `--layer-spacing`, and `--component-spacing` to tune ELK layout. `--interactive` enables hover tooltips for XY chart bars and points.
-
----
-
-## Creating Diagrams
-
-### Using Templates
-
-**Step 1: List available templates**
-```bash
-ls assets/example_diagrams/
-# flowchart.mmd  sequence.mmd  state.mmd  class.mmd  er.mmd  xychart.mmd
-```
-
-**Step 2: Copy and modify**
-```bash
-cp assets/example_diagrams/flowchart.mmd my-workflow.mmd
-# Edit my-workflow.mmd with user requirements
-```
-
-**Step 3: Render**
-```bash
-node scripts/render.mjs \
-  --input my-workflow.mmd \
-  --output my-workflow.svg \
-  --theme github-dark
-```
-
-### Diagram Type Reference
-
-For detailed syntax and best practices, see [DIAGRAM_TYPES.md](references/DIAGRAM_TYPES.md).
-
-**Quick reference:**
-
-**Flowchart** - Processes, workflows, decision trees
-```mermaid
-flowchart LR
-    A[Start] --> B{Decision}
-    B -->|Yes| C[Action]
-    B -->|No| D[End]
-```
-
-**Sequence** - API calls, interactions, message flows
-```mermaid
-sequenceDiagram
-    User->>Server: Request
-    Server-->>User: Response
-```
-
-**State** - Application states, lifecycle, FSM
-```mermaid
-stateDiagram-v2
-    [*] --> Idle
-    Idle --> Loading
-    Loading --> [*]
-```
-
-**Class** - Object models, architecture, relationships
-```mermaid
-classDiagram
-    User --> Post: creates
-    Post --> Comment: has
-```
-
-**ER** - Database schema, data models
-```mermaid
-erDiagram
-    USER ||--o{ ORDER : places
-    ORDER ||--|{ ORDER_ITEM : contains
-```
-
-**XY Chart** - Bar charts, line charts, trends, and comparisons
-```mermaid
-xychart-beta
-    title "Monthly Revenue"
-    x-axis [Jan, Feb, Mar]
-    bar [3200, 4100, 3800]
-    line [3000, 3700, 4200]
-```
-
-Flowcharts and state diagrams support `linkStyle`; state names may contain CJK text. SVG output supports `<br>` multiline labels and simple `<b>`, `<i>`, `<u>`, and `<s>` inline formatting.
-
-### From User Requirements
-
-**Step 1: Identify diagram type**
-- **Process/workflow** → Flowchart
-- **API/interaction** → Sequence
-- **States/lifecycle** → State
-- **Object model** → Class
-- **Database** → ER
-- **Metrics/trends** → XY Chart
-
-**Step 2: Create diagram file**
-```bash
-cat > user-diagram.mmd << 'EOF'
-# [Insert generated Mermaid code]
-EOF
-```
-
-**Step 3: Render and iterate**
-```bash
-node scripts/render.mjs \
-  --input user-diagram.mmd \
-  --output preview.svg \
-  --theme tokyo-night
-
-# Review with user, edit diagram.mmd if needed, re-render
-```
-
----
-
-## Theming
-
-### List Available Themes
+### List themes
 
 ```bash
 node scripts/themes.mjs
 ```
 
-**Output:**
-```
-Available Beautiful-Mermaid Themes:
-
- 1. zinc-light
- 2. zinc-dark
- 3. tokyo-night
- 4. tokyo-night-storm
- 5. tokyo-night-light
- 6. catppuccin-mocha
- 7. catppuccin-latte
- 8. nord
- 9. nord-light
-10. dracula
-11. github-light
-12. github-dark
-13. solarized-light
-14. solarized-dark
-15. one-dark
-
-Total: 15 themes
-```
-
-### Theme Selection Guide
-
-**For dark mode documentation:**
-- `tokyo-night` ⭐ - Modern, developer-friendly
-- `github-dark` - Familiar GitHub style
-- `dracula` - Vibrant, high contrast
-- `nord` - Cool, minimalist
-
-**For light mode documentation:**
-- `github-light` - Clean, professional
-- `zinc-light` - High contrast, printable
-- `catppuccin-latte` - Warm, friendly
-
-**Detailed theme information:** See [THEMES.md](references/THEMES.md)
-
-### Apply Theme to Diagram
+### Render SVG
 
 ```bash
 node scripts/render.mjs \
   --input diagram.mmd \
-  --output themed.svg \
+  --output diagram.svg \
   --theme tokyo-night
 ```
 
-### Compare Themes
+### Render terminal text
 
-Render the same diagram with multiple themes:
 ```bash
-for theme in tokyo-night dracula github-dark; do
-  node scripts/render.mjs \
-    --input diagram.mmd \
-    --output "diagram-${theme}.svg" \
-    --theme "$theme"
-done
+node scripts/render.mjs \
+  --input diagram.mmd \
+  --output diagram.txt \
+  --format ascii \
+  --color-mode none
 ```
 
----
+Add `--use-ascii` when Unicode box-drawing characters are not acceptable.
 
-## Batch Rendering
+### Batch render a directory
 
-### Batch Render Directory
-
-**Step 1: Organize diagrams**
-```bash
-diagrams/
-├── architecture.mmd
-├── workflow.mmd
-└── database.mmd
-```
-
-**Step 2: Batch render**
 ```bash
 node scripts/batch.mjs \
   --input-dir ./diagrams \
   --output-dir ./rendered \
   --format svg \
-  --theme tokyo-night \
+  --theme github-dark \
   --workers 4
 ```
 
-**Output:**
-```
-Found 3 diagram(s) to render...
-✓ architecture.mmd
-✓ workflow.mmd
-✓ database.mmd
+Use batch rendering for three or more diagrams or when consistent options must be applied to a directory.
 
-3/3 diagrams rendered successfully
-```
+## Theme selection
 
-### Batch with Multiple Formats
+- General dark documentation: `tokyo-night`
+- GitHub dark or light surfaces: `github-dark`, `github-light`
+- Print and presentations: `zinc-light`
+- High-contrast color: `dracula`
+- Cool, restrained palette: `nord`, `nord-light`
 
-Render both SVG and ASCII:
-```bash
-# SVG for docs
-node scripts/batch.mjs \
-  --input-dir ./diagrams \
-  --output-dir ./svg \
-  --format svg \
-  --theme github-dark
+Read `references/THEMES.md` or open `docs/THEME_GALLERY.md` when visual theme choice matters. A named theme can be refined with explicit color flags.
 
-# ASCII for README
-node scripts/batch.mjs \
-  --input-dir ./diagrams \
-  --output-dir ./ascii \
-  --format ascii \
-  --use-ascii
-```
+## Useful options
 
-### Performance Options
+### Shared styling
 
-- `--workers N` - Parallel rendering (default: 4)
-- Recommended: `--workers 8` for 10+ diagrams
+| Option | Purpose |
+| --- | --- |
+| `--theme <name>` | Apply one of the 15 built-in themes |
+| `--bg`, `--fg` | Set required base colors |
+| `--line`, `--accent`, `--muted` | Refine connectors, highlights, and secondary text |
+| `--surface`, `--border` | Refine node fill and stroke |
+| `--font <name>` | Set the SVG font family |
 
----
+### SVG
 
-## Common Use Cases
+| Option | Purpose |
+| --- | --- |
+| `--transparent` | Remove the SVG background |
+| `--padding <n>` | Set canvas padding |
+| `--node-spacing <n>` | Set horizontal node spacing |
+| `--layer-spacing <n>` | Set vertical layer spacing |
+| `--component-spacing <n>` | Separate disconnected components |
+| `--interactive` | Enable XY chart hover tooltips |
 
-### 1. Architecture Diagram for Documentation
+### Terminal output
 
-```bash
-# User provides architecture description
-# → Create flowchart.mmd
-# → Render with professional theme
+| Option | Purpose |
+| --- | --- |
+| `--use-ascii` | Replace Unicode box drawing with plain ASCII |
+| `--padding-x`, `--padding-y` | Tune diagram spacing |
+| `--box-border-padding` | Tune padding inside node boxes |
+| `--color-mode <mode>` | `none`, `auto`, `ansi16`, `ansi256`, `truecolor`, or `html` |
 
-node scripts/render.mjs \
-  --input architecture.mmd \
-  --output docs/architecture.svg \
-  --theme github-dark \
-  --transparent
-```
+Run `node scripts/render.mjs --help` or `node scripts/batch.mjs --help` for the authoritative CLI list.
 
-### 2. API Sequence Diagram
+## Authoring guidance
 
-```bash
-# User describes API flow
-# → Create sequence.mmd
-# → Render with clear theme
+- Prefer short, concrete labels; preserve domain-specific terms from the user.
+- Use explicit edge labels when a branch or message is ambiguous.
+- Keep large diagrams readable by splitting unrelated concerns instead of shrinking text.
+- Use `LR` for wide flows and `TB` for narrow documents.
+- Avoid communicating meaning through color alone.
+- Use a light theme for print and confirm contrast against the final background.
+- For unfamiliar syntax, start from `assets/example_diagrams/` and consult the diagram reference.
 
-node scripts/render.mjs \
-  --input api-flow.mmd \
-  --output api-sequence.svg \
-  --theme tokyo-night
-```
+## Validation
 
-### 3. Database Schema Visualization
+After rendering:
 
-```bash
-# User provides table definitions
-# → Create er.mmd
-# → Render for database docs
+1. Confirm the command exits successfully and the output file is non-empty.
+2. Confirm SVG output begins with `<svg`; confirm text output contains visible diagram content.
+3. Inspect visual output when layout matters, especially long labels, CJK text, disconnected components, and XY charts.
+4. Confirm arrows, cardinalities, states, and labels match the source request.
+5. Report any renderer limitation instead of silently dropping unsupported syntax.
 
-node scripts/render.mjs \
-  --input schema.mmd \
-  --output database-schema.svg \
-  --theme dracula
-```
-
-### 4. Terminal-Friendly Workflow
-
-```bash
-# For README or terminal display
-node scripts/render.mjs \
-  --input workflow.mmd \
-  --format ascii \
-  --use-ascii > workflow.txt
-```
-
-### 5. Presentation Slides
-
-```bash
-# High-contrast for projectors
-node scripts/render.mjs \
-  --input slides-diagram.mmd \
-  --output presentation.svg \
-  --theme zinc-light
-```
-
-### 6. Interactive Metrics Chart
-
-```bash
-node scripts/render.mjs \
-  --input metrics.mmd \
-  --output metrics.svg \
-  --theme github-light \
-  --interactive
-```
-
----
+Run both `npm test` and `npm run validate` when changing this skill, its scripts, templates, or references.
 
 ## Troubleshooting
 
-### beautiful-mermaid Not Installed
-```
-Error: Cannot find module 'beautiful-mermaid'
-```
-**Note:** This should auto-install on first run. If it fails:
-```bash
-cd /path/to/pretty-mermaid-skill && npm install
-```
+- Missing dependency: run `npm install` in `<skill-root>`; the CLI also attempts a first-run install.
+- Unknown theme: run `node scripts/themes.mjs` and use an exact listed name.
+- Parse error: consult `references/DIAGRAM_TYPES.md`, reduce to the failing statement, then restore the diagram incrementally.
+- Crowded SVG: increase `--node-spacing`, `--layer-spacing`, or `--component-spacing`.
+- Terminal color escape codes in redirected output: use `--color-mode none`.
 
-### Invalid Mermaid Syntax
-```
-Error: Parse error on line 3
-```
-**Solution:**
-1. Validate syntax against [DIAGRAM_TYPES.md](references/DIAGRAM_TYPES.md)
-2. Test on https://mermaid.live/
-3. Check for common errors:
-   - Missing spaces in `A --> B`
-   - Incorrect node shape syntax
-   - Unclosed brackets
+## Reference routing
 
-### File Not Found
-```
-Error: Input file not found: diagram.mmd
-```
-**Solution:** Verify file path is correct, use absolute path if needed
-
----
-
-## Resources
-
-### scripts/
-Executable Node.js scripts for rendering operations:
-- `render.mjs` - Main rendering script
-- `batch.mjs` - Batch processing script
-- `themes.mjs` - Theme listing utility
-
-### references/
-Documentation to inform diagram creation:
-- `THEMES.md` - Detailed theme reference with examples
-- `DIAGRAM_TYPES.md` - Comprehensive syntax guide for all diagram types
-- `api_reference.md` - beautiful-mermaid API documentation
-
-### assets/
-Template files for quick diagram creation:
-- `example_diagrams/flowchart.mmd` - Flowchart template
-- `example_diagrams/sequence.mmd` - Sequence diagram template
-- `example_diagrams/state.mmd` - State diagram template
-- `example_diagrams/class.mmd` - Class diagram template
-- `example_diagrams/er.mmd` - ER diagram template
-- `example_diagrams/xychart.mmd` - XY bar and line chart template
-
----
-
-## Tips & Best Practices
-
-### Performance
-- Batch render for 3+ diagrams (parallel processing)
-- Keep diagrams under 50 nodes for fast rendering
-- Use ASCII for quick previews
-
-### Quality
-- Use `tokyo-night` or `github-dark` for technical docs
-- Add transparency for dark/light mode compatibility: `--transparent`
-- Test theme in target environment before batch rendering
-
-### Workflow
-1. Start with templates from `assets/example_diagrams/`
-2. Iterate with user feedback
-3. Apply theme last
-4. Render both SVG (docs) and ASCII (README) if needed
-
-### Accessibility
-- Use high-contrast themes for presentations
-- Add text labels to all connections
-- Avoid color-only information encoding
+| Resource | Read or use when |
+| --- | --- |
+| `references/DIAGRAM_TYPES.md` | Authoring or debugging Mermaid syntax |
+| `references/THEMES.md` | Comparing themes or defining custom colors |
+| `references/api_reference.md` | Extending scripts or calling `beautiful-mermaid` directly |
+| `docs/THEME_GALLERY.md` | Choosing a theme visually |
+| `assets/example_diagrams/` | Starting from a supported diagram template |
+| `scripts/render.mjs` | Rendering one diagram |
+| `scripts/batch.mjs` | Rendering a directory in parallel |
+| `scripts/themes.mjs` | Listing installed themes |

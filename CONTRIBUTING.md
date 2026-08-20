@@ -44,7 +44,7 @@ git diff --check
 git diff --exit-code -- assets/theme_gallery
 ```
 
-The final gallery command should have no output. If it reports changes, commit the regenerated previews.
+`git diff --exit-code -- assets/theme_gallery` should produce no output. If it reports changes, commit the regenerated previews.
 
 ## Pull requests
 

@@ -1,13 +1,14 @@
 <div align="center">
 
-# Pretty-Mermaid Skills
+# Pretty Mermaid
 
-![fLEWT5x.png](https://iili.io/fLEWT5x.png)
+**为 AI Agent 打造的精美 Mermaid 图表**
 
-将 Mermaid 图表渲染为精美的 SVG 或 ASCII 艺术
+将 Mermaid 源码转换为精美 SVG 与终端友好的 ASCII——本地运行，无需浏览器。
 
-极速、全主题支持、零 DOM 依赖。为 AI 而生。
+![Pretty Mermaid 将 Mermaid 源码转换为带主题的 SVG 和终端 ASCII 图表](assets/social-preview.png)
 
+[![skills.sh](https://skills.sh/b/imxv/pretty-mermaid-skills)](https://www.skills.sh/imxv/pretty-mermaid-skills/pretty-mermaid)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D14-brightgreen)](https://nodejs.org/)
 [![GitHub stars](https://img.shields.io/github/stars/imxv/Pretty-mermaid-skills?style=social)](https://github.com/imxv/Pretty-mermaid-skills)
@@ -16,8 +17,20 @@
 
 </div>
 
-## 简介
-为 AI 提供的 Mermaid 图表渲染 Skill，支持 SVG 和 ASCII 双格式输出，让您的文档更加生动。
+## 🚀 安装
+
+```bash
+npx skills add imxv/pretty-mermaid-skills@pretty-mermaid -g -y
+```
+
+[前往 skills.sh 查看安装量与安全扫描结果 →](https://www.skills.sh/imxv/pretty-mermaid-skills/pretty-mermaid)
+
+## 为什么选择 Pretty Mermaid？
+
+- **专为 AI Agent 设计**：支持 Claude Code、Cursor、Codex、Gemini CLI 等环境
+- **一份源码，两种输出**：文档用精美 SVG，终端用 ASCII/Unicode
+- **无需浏览器**：本地渲染，不依赖 Chromium、Puppeteer 或 DOM
+- **灵活开箱即用**：15 种主题、自定义配色、六种图表类型和批量渲染
 
 ## ✨ 功能特性
 
@@ -49,11 +62,11 @@
 - **Codex**
 - **qoder**
 
-## 🚀 安装步骤
+## 安装说明
 
-### 一键安装
+### 从 GitHub 安装
 ```bash
-npx skills add https://github.com/imxv/pretty-mermaid-skills --skill pretty-mermaid
+npx skills add imxv/pretty-mermaid-skills@pretty-mermaid -g -y
 ```
 
 ### 验证安装

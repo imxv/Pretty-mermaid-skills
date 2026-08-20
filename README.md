@@ -1,13 +1,14 @@
 <div align="center">
 
-# Pretty-Mermaid Skills
+# Pretty Mermaid
 
-![fLEWT5x.png](https://iili.io/fLEWT5x.png)
+**Beautiful Mermaid diagrams for AI agents**
 
-Render Mermaid diagrams as beautiful SVGs or ASCII art
+Turn Mermaid source into polished SVGs and terminal-ready ASCII—locally, without a browser.
 
-Ultra-fast, fully themeable, zero DOM dependencies. Built for the AI era.
+![Pretty Mermaid converts Mermaid source into themed SVG and terminal ASCII diagrams](assets/social-preview.png)
 
+[![skills.sh](https://skills.sh/b/imxv/pretty-mermaid-skills)](https://www.skills.sh/imxv/pretty-mermaid-skills/pretty-mermaid)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D14-brightgreen)](https://nodejs.org/)
 [![GitHub stars](https://img.shields.io/github/stars/imxv/Pretty-mermaid-skills?style=social)](https://github.com/imxv/Pretty-mermaid-skills)
@@ -16,8 +17,20 @@ Ultra-fast, fully themeable, zero DOM dependencies. Built for the AI era.
 
 </div>
 
-## Introduction
-A Mermaid diagram rendering skill for AI, supporting both SVG and ASCII output formats to make your documentation more vivid.
+## 🚀 Install
+
+```bash
+npx skills add imxv/pretty-mermaid-skills@pretty-mermaid -g -y
+```
+
+[View the skill, install count, and security audits on skills.sh →](https://www.skills.sh/imxv/pretty-mermaid-skills/pretty-mermaid)
+
+## Why Pretty Mermaid?
+
+- **Made for AI agents**: works with Claude Code, Cursor, Codex, Gemini CLI, and more
+- **One source, two outputs**: polished SVG for docs and ASCII/Unicode for terminals
+- **No browser required**: renders locally without Chromium, Puppeteer, or a DOM
+- **Flexible by default**: 15 themes, custom colors, six diagram types, and batch rendering
 
 ## ✨ Features
 
@@ -49,11 +62,11 @@ Seamlessly integrates with the following AI coding environments:
 - **Codex**
 - **qoder**
 
-## 🚀 Installation
+## Installation details
 
-### One-click Install
+### Install from GitHub
 ```bash
-npx skills add https://github.com/imxv/pretty-mermaid-skills --skill pretty-mermaid
+npx skills add imxv/pretty-mermaid-skills@pretty-mermaid -g -y
 ```
 
 ### Verify Installation

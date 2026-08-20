@@ -34,7 +34,6 @@ Legacy aliases `renderMermaid` and `renderMermaidAscii` still exist in 1.1.3, bu
 | `nodeSpacing` | `24` | Horizontal spacing between sibling nodes |
 | `layerSpacing` | `40` | Vertical spacing between layers |
 | `componentSpacing` | `24` | Spacing between disconnected components |
-| `thoroughness` | `3` | Crossing-minimization trials from 1 to 7 |
 | `interactive` | `false` | Hover tooltips for XY chart bars and points |
 
 ## ASCII Options

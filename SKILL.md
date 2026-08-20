@@ -154,7 +154,6 @@ node scripts/render.mjs \
   --input chart.mmd \
   --node-spacing 32 \
   --layer-spacing 56 \
-  --thoroughness 5 \
   --interactive \
   --output chart.svg
 ```

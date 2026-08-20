@@ -31,6 +31,7 @@ for (const file of files) {
 
 const cliTestDir = mkdtempSync(join(tmpdir(), 'pretty-mermaid-smoke-'));
 const flowchartPath = join(examplesDir, 'flowchart.mmd');
+const xychartPath = join(examplesDir, 'xychart.mmd');
 
 try {
   for (const themeName of inheritedThemeNames) {
@@ -51,8 +52,56 @@ try {
     assert.notEqual(batchResult.status, 0, `batch.mjs accepted inherited theme: ${themeName}`);
     assert.match(batchResult.stderr, /Unknown theme:/);
   }
+
+  const interactiveSvgPath = join(cliTestDir, 'interactive.svg');
+  const renderInteractiveResult = spawnSync(process.execPath, [
+    join(scriptsDir, 'render.mjs'),
+    '--input', xychartPath,
+    '--output', interactiveSvgPath,
+    '--interactive',
+  ], { encoding: 'utf8' });
+  assert.equal(renderInteractiveResult.status, 0, renderInteractiveResult.stderr);
+  assert.match(readFileSync(interactiveSvgPath, 'utf8'), /class="xychart-tip/);
+
+  const batchInteractiveDir = join(cliTestDir, 'batch-interactive');
+  const batchInteractiveResult = spawnSync(process.execPath, [
+    join(scriptsDir, 'batch.mjs'),
+    '--input-dir', examplesDir,
+    '--output-dir', batchInteractiveDir,
+    '--interactive',
+  ], { encoding: 'utf8' });
+  assert.equal(batchInteractiveResult.status, 0, batchInteractiveResult.stderr);
+  assert.match(batchInteractiveResult.stdout, /xychart\.mmd/);
+  assert.match(readFileSync(join(batchInteractiveDir, 'xychart.svg'), 'utf8'), /class="xychart-tip/);
+
+  const themedAsciiPath = join(cliTestDir, 'dracula.txt');
+  const renderThemedAsciiResult = spawnSync(process.execPath, [
+    join(scriptsDir, 'render.mjs'),
+    '--input', flowchartPath,
+    '--output', themedAsciiPath,
+    '--format', 'ascii',
+    '--color-mode', 'truecolor',
+    '--theme', 'dracula',
+  ], { encoding: 'utf8' });
+  assert.equal(renderThemedAsciiResult.status, 0, renderThemedAsciiResult.stderr);
+  assert.match(readFileSync(themedAsciiPath, 'utf8'), /\u001b\[38;2;248;248;242m/);
+
+  const batchThemedAsciiDir = join(cliTestDir, 'batch-dracula');
+  const batchThemedAsciiResult = spawnSync(process.execPath, [
+    join(scriptsDir, 'batch.mjs'),
+    '--input-dir', examplesDir,
+    '--output-dir', batchThemedAsciiDir,
+    '--format', 'ascii',
+    '--color-mode', 'truecolor',
+    '--theme', 'dracula',
+  ], { encoding: 'utf8' });
+  assert.equal(batchThemedAsciiResult.status, 0, batchThemedAsciiResult.stderr);
+  assert.match(
+    readFileSync(join(batchThemedAsciiDir, 'flowchart.txt'), 'utf8'),
+    /\u001b\[38;2;248;248;242m/,
+  );
 } finally {
   rmSync(cliTestDir, { recursive: true, force: true });
 }
 
-console.log(`Smoke tests passed: ${files.length} diagrams x 2 formats, 15 themes, inherited theme rejection.`);
+console.log(`Smoke tests passed: ${files.length} diagrams x 2 formats, 15 themes, CLI theme and interactive coverage.`);

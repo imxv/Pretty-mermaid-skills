@@ -8,6 +8,21 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync } from 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const skillRoot = join(__dirname, '..');
 
+function toAsciiTheme(colors) {
+  if (!colors) return undefined;
+
+  return {
+    fg: colors.fg,
+    border: colors.border ?? colors.fg,
+    line: colors.line ?? colors.fg,
+    arrow: colors.accent ?? colors.line ?? colors.fg,
+    accent: colors.accent ?? colors.fg,
+    bg: colors.bg,
+    corner: colors.border ?? colors.line ?? colors.fg,
+    junction: colors.accent ?? colors.border ?? colors.line ?? colors.fg,
+  };
+}
+
 async function loadBeautifulMermaid() {
   try {
     return await import('beautiful-mermaid');
@@ -61,7 +76,6 @@ function parseArgs() {
     nodeSpacing: 24,
     layerSpacing: 40,
     componentSpacing: 24,
-    thoroughness: 3,
     interactive: false,
     workers: 4,
   };
@@ -93,7 +107,6 @@ function parseArgs() {
       case '--node-spacing': opts.nodeSpacing = parseInt(val); i++; break;
       case '--layer-spacing': opts.layerSpacing = parseInt(val); i++; break;
       case '--component-spacing': opts.componentSpacing = parseInt(val); i++; break;
-      case '--thoroughness': opts.thoroughness = parseInt(val); i++; break;
       case '--interactive': opts.interactive = true; break;
       case '--workers': case '-w': opts.workers = parseInt(val); i++; break;
       case '--help': case '-h':
@@ -122,7 +135,6 @@ Options:
       --node-spacing <n>   SVG horizontal node spacing (default: 24)
       --layer-spacing <n>  SVG vertical layer spacing (default: 40)
       --component-spacing <n>  SVG disconnected component spacing (default: 24)
-      --thoroughness <n>   SVG layout trials, 1-7 (default: 3)
       --interactive        Enable XY chart hover tooltips (SVG only)
   -w, --workers <n>        Parallel workers (default: 4)`);
         process.exit(0);
@@ -151,6 +163,7 @@ async function renderFile(file, inputDir, outputDir, opts, lib) {
   const ext = opts.format === 'svg' ? '.svg' : '.txt';
   const outputPath = join(outputDir, file.replace(/\.mmd$/, ext));
   const input = readFileSync(inputPath, 'utf8');
+  const theme = opts.theme ? THEMES[opts.theme] : undefined;
 
   if (opts.format === 'ascii') {
     const ascii = renderMermaidASCII(input, {
@@ -159,10 +172,10 @@ async function renderFile(file, inputDir, outputDir, opts, lib) {
       paddingY: opts.paddingY,
       boxBorderPadding: opts.boxBorderPadding,
       colorMode: opts.colorMode,
+      theme: toAsciiTheme(theme),
     });
     writeFileSync(outputPath, ascii);
   } else {
-    const theme = opts.theme ? THEMES[opts.theme] : undefined;
     const colors = theme || {
       ...(opts.bg && { bg: opts.bg }),
       ...(opts.fg && { fg: opts.fg }),
@@ -181,7 +194,6 @@ async function renderFile(file, inputDir, outputDir, opts, lib) {
       nodeSpacing: opts.nodeSpacing,
       layerSpacing: opts.layerSpacing,
       componentSpacing: opts.componentSpacing,
-      thoroughness: opts.thoroughness,
       interactive: opts.interactive,
     });
     writeFileSync(outputPath, svg);

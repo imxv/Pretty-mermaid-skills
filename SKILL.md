@@ -160,7 +160,7 @@ After rendering:
 4. Confirm arrows, cardinalities, states, and labels match the source request.
 5. Report any renderer limitation instead of silently dropping unsupported syntax.
 
-Use `npm test` when changing this skill, its scripts, templates, or references.
+Run both `npm test` and `npm run validate` when changing this skill, its scripts, templates, or references.
 
 ## Troubleshooting
 

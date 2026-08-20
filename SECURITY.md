@@ -13,6 +13,6 @@ The latest release receives security fixes. Older versions may be asked to upgra
 
 Please do not disclose vulnerabilities or exploit details in a public issue.
 
-Use GitHub's **Report a vulnerability** option when it is available. Otherwise, open an issue titled `[Security] Private contact requested` without technical details. A maintainer will arrange a private follow-up through GitHub.
+Use GitHub's [private vulnerability reporting form](https://github.com/imxv/Pretty-mermaid-skills/security/advisories/new). Do not use a public issue for security reports.
 
 Include the affected version, impact, reproduction steps, and any suggested mitigation only after a private channel has been established. You can expect an initial acknowledgement within seven days.

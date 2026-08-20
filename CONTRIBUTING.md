@@ -38,6 +38,7 @@ node scripts/render.mjs \
 
 ```bash
 npm test
+npm run validate
 npm run gallery
 git diff --check
 git diff --exit-code -- assets/theme_gallery

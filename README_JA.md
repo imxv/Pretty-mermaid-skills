@@ -76,11 +76,10 @@ npx skills add imxv/pretty-mermaid-skills@pretty-mermaid -g -y
 ## インストールの確認
 
 ```bash
-cd Pretty-mermaid-skills
-node scripts/themes.mjs
+npx skills list -g
 ```
 
-> **注**：依存パッケージは初回実行時にも自動インストールされます。Node.js 16 以上が必要です。
+グローバル Skill 一覧に `pretty-mermaid` が表示されることを確認してください。Node.js 16 以上が必要です。
 
 ## 📖 クイックスタート
 

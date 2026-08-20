@@ -81,10 +81,9 @@ npx skills add imxv/pretty-mermaid-skills@pretty-mermaid -g -y
 
 ### Verify Installation
 ```bash
-cd Pretty-mermaid-skills
-node scripts/themes.mjs
+npx skills list -g
 ```
-> **Note**: Dependencies will be auto-installed on first run. Just ensure Node.js is available.
+Confirm that `pretty-mermaid` appears in the global skill list. Node.js 16 or newer is required.
 
 ## 📖 Quick Start
 

@@ -36,17 +36,14 @@ body:
     id: source
     attributes:
       label: Minimal Mermaid source
-      description: Remove private or sensitive data.
+      description: Include Mermaid source when applicable. Remove private or sensitive data.
       render: mermaid
-    validations:
-      required: true
   - type: textarea
     id: command
     attributes:
       label: Command and options
+      description: Include the command and options when applicable.
       render: shell
-    validations:
-      required: true
   - type: textarea
     id: expected
     attributes:

@@ -11,6 +11,7 @@
 <!-- Include commands run and relevant rendered output. -->
 
 - [ ] `npm test`
+- [ ] `npm run validate`
 - [ ] `git diff --check`
 - [ ] Theme gallery regenerated when rendering or themes changed
 - [ ] Documentation updated when user-facing behavior changed

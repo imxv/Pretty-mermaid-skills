@@ -31,6 +31,16 @@ flowchart LR
 - `--text-->` - Arrow with text
 - `-->|text|` - Arrow with text (alt syntax)
 
+### Edge Styling
+```mermaid
+flowchart LR
+    A --> B
+    B --> C
+    linkStyle 0 stroke:#7aa2f7,stroke-width:3px
+```
+
+`linkStyle` works in flowcharts and state diagrams. Target an edge by its zero-based declaration order, or use `linkStyle default` for all edges.
+
 ### Direction
 - `LR` - Left to Right
 - `RL` - Right to Left
@@ -175,6 +185,7 @@ stateDiagram-v2
 - Limit composite state depth to 2 levels
 - Group related states together
 - Use choice nodes for complex branching
+- State names and transition labels may contain Chinese, Japanese, Korean, and other Unicode text
 
 ---
 
@@ -291,6 +302,41 @@ erDiagram
 - Show only essential attributes
 - Keep relationship labels clear
 - Limit to 6-8 entities per diagram
+
+---
+
+## XY Chart
+
+### Bar and Line Series
+```mermaid
+xychart-beta
+    title "Monthly Revenue"
+    x-axis [Jan, Feb, Mar, Apr, May, Jun]
+    y-axis "Revenue" 0 --> 7000
+    bar [3200, 4100, 3800, 5200, 4900, 6100]
+    line [3000, 3700, 4200, 4600, 5300, 5900]
+```
+
+### Horizontal Charts
+```mermaid
+xychart-beta horizontal
+    title "Language Popularity"
+    x-axis [Python, JavaScript, Java, Go, Rust]
+    bar [30, 25, 20, 12, 8]
+```
+
+### Axis Configuration
+- Categorical axis: `x-axis [A, B, C]`
+- Numeric range: `x-axis 0 --> 100`
+- Axis title: `y-axis "Score" 0 --> 100`
+- Add multiple `bar` or `line` declarations for multi-series charts
+- Pass `--interactive` when rendering SVG to enable hover tooltips
+
+### Best Practices
+- Keep category labels short enough to avoid crowding
+- Set an explicit numeric range when series must be compared consistently
+- Use a combined bar and line chart only when the two series share a meaningful scale
+- Prefer ASCII output with `--color-mode none` for logs and stable snapshots
 
 ---
 

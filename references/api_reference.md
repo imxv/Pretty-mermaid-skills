@@ -1,34 +1,55 @@
-# Reference Documentation for Beautiful Mermaid
+# beautiful-mermaid 1.1 API Reference
 
-This is a placeholder for detailed reference documentation.
-Replace with actual reference content or delete if not needed.
+Use this reference when extending the bundled CLI scripts or calling `beautiful-mermaid` directly. The Skill currently targets `beautiful-mermaid@^1.1.3`.
 
-Example real reference docs from other skills:
-- product-management/references/communication.md - Comprehensive guide for status updates
-- product-management/references/context_building.md - Deep-dive on gathering context
-- bigquery/references/ - API references and query examples
+## Rendering API
 
-## When Reference Docs Are Useful
+```js
+import {
+  renderMermaidSVG,
+  renderMermaidSVGAsync,
+  renderMermaidASCII,
+  THEMES,
+} from 'beautiful-mermaid';
+```
 
-Reference docs are ideal for:
-- Comprehensive API documentation
-- Detailed workflow guides
-- Complex multi-step processes
-- Information too lengthy for main SKILL.md
-- Content that's only needed for specific use cases
+- `renderMermaidSVG(text, options?)` returns an SVG string synchronously.
+- `renderMermaidSVGAsync(text, options?)` returns the same SVG as a promise.
+- `renderMermaidASCII(text, options?)` returns Unicode or plain ASCII terminal output.
+- `THEMES` contains the 15 built-in color themes.
+- `parseMermaid(text)` parses source into a graph for custom processing.
+- `fromShikiTheme(theme)` converts a Shiki theme to diagram colors.
 
-## Structure Suggestions
+Legacy aliases `renderMermaid` and `renderMermaidAscii` still exist in 1.1.3, but new code should use the canonical names above.
 
-### API Reference Example
-- Overview
-- Authentication
-- Endpoints with examples
-- Error codes
-- Rate limits
+## SVG Options
 
-### Workflow Guide Example
-- Prerequisites
-- Step-by-step instructions
-- Common patterns
-- Troubleshooting
-- Best practices
+| Option | Default | Purpose |
+| --- | --- | --- |
+| `bg`, `fg` | zinc light colors | Base background and foreground colors |
+| `line`, `accent`, `muted`, `surface`, `border` | derived | Optional enriched theme colors |
+| `font` | `Inter` | Font family |
+| `transparent` | `false` | Transparent SVG background |
+| `padding` | `40` | Canvas padding in pixels |
+| `nodeSpacing` | `24` | Horizontal spacing between sibling nodes |
+| `layerSpacing` | `40` | Vertical spacing between layers |
+| `componentSpacing` | `24` | Spacing between disconnected components |
+| `thoroughness` | `3` | Crossing-minimization trials from 1 to 7 |
+| `interactive` | `false` | Hover tooltips for XY chart bars and points |
+
+## ASCII Options
+
+| Option | Default | Purpose |
+| --- | --- | --- |
+| `useAscii` | `false` | Use plain ASCII instead of Unicode box drawing |
+| `paddingX` | `5` | Horizontal node spacing |
+| `paddingY` | `5` | Vertical node spacing |
+| `boxBorderPadding` | `1` | Inner box padding |
+| `colorMode` | `auto` | `none`, `auto`, `ansi16`, `ansi256`, `truecolor`, or `html` |
+| `theme` | none | Partial ASCII role-color overrides |
+
+## Supported Inputs
+
+The renderer auto-detects flowcharts, sequence diagrams, state diagrams, class diagrams, ER diagrams, and `xychart-beta`. Version 1.1 also supports `linkStyle`, CJK state names, multiline labels, disconnected components, and per-subgraph direction overrides.
+
+For exact upstream behavior, consult the [beautiful-mermaid README](https://github.com/lukilabs/beautiful-mermaid#readme) and [v1.x releases](https://github.com/lukilabs/beautiful-mermaid/releases).

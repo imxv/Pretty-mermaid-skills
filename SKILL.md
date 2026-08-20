@@ -2,15 +2,15 @@
 name: pretty-mermaid
 description: |
   Render beautiful Mermaid diagrams as SVG or ASCII art using the beautiful-mermaid library.
-  Supports 15+ themes, 5 diagram types (flowchart, sequence, state, class, ER), and ultra-fast rendering.
+  Supports 15 themes, 6 diagram types (flowchart, sequence, state, class, ER, XY charts), and ultra-fast rendering.
 
   Use this skill when:
   1. User asks to "render a mermaid diagram" or provides .mmd files
-  2. User requests "create a flowchart/sequence diagram/state diagram"
+  2. User requests "create a flowchart/sequence/state/class/ER/XY chart"
   3. User wants to "apply a theme" or "beautify a diagram"
   4. User needs to "batch process multiple diagrams"
   5. User mentions "ASCII diagram" or "terminal-friendly diagram"
-  6. User wants to visualize architecture, workflows, or data models
+  6. User wants to visualize architecture, workflows, data models, or chart data
 ---
 
 # Pretty Mermaid
@@ -51,7 +51,8 @@ node scripts/batch.mjs \
 node scripts/render.mjs \
   --input diagram.mmd \
   --format ascii \
-  --use-ascii
+  --use-ascii \
+  --color-mode none
 ```
 
 ---
@@ -117,6 +118,7 @@ When user provides a `.mmd` file or Mermaid code block:
   - `--use-ascii` - Use pure ASCII (no Unicode)
   - `--padding-x 5` - Horizontal spacing
   - `--padding-y 5` - Vertical spacing
+  - `--color-mode auto` - Terminal colors (`none`, `auto`, `ansi16`, `ansi256`, `truecolor`, or `html`)
 
 ### Advanced Options
 
@@ -146,6 +148,19 @@ node scripts/render.mjs \
   --output custom-font.svg
 ```
 
+**Layout and interactive XY charts**:
+```bash
+node scripts/render.mjs \
+  --input chart.mmd \
+  --node-spacing 32 \
+  --layer-spacing 56 \
+  --thoroughness 5 \
+  --interactive \
+  --output chart.svg
+```
+
+Use `--padding`, `--node-spacing`, `--layer-spacing`, and `--component-spacing` to tune ELK layout. `--interactive` enables hover tooltips for XY chart bars and points.
+
 ---
 
 ## Creating Diagrams
@@ -155,7 +170,7 @@ node scripts/render.mjs \
 **Step 1: List available templates**
 ```bash
 ls assets/example_diagrams/
-# flowchart.mmd  sequence.mmd  state.mmd  class.mmd  er.mmd
+# flowchart.mmd  sequence.mmd  state.mmd  class.mmd  er.mmd  xychart.mmd
 ```
 
 **Step 2: Copy and modify**
@@ -215,6 +230,17 @@ erDiagram
     ORDER ||--|{ ORDER_ITEM : contains
 ```
 
+**XY Chart** - Bar charts, line charts, trends, and comparisons
+```mermaid
+xychart-beta
+    title "Monthly Revenue"
+    x-axis [Jan, Feb, Mar]
+    bar [3200, 4100, 3800]
+    line [3000, 3700, 4200]
+```
+
+Flowcharts and state diagrams support `linkStyle`; state names may contain CJK text. SVG output supports `<br>` multiline labels and simple `<b>`, `<i>`, `<u>`, and `<s>` inline formatting.
+
 ### From User Requirements
 
 **Step 1: Identify diagram type**
@@ -223,6 +249,7 @@ erDiagram
 - **States/lifecycle** → State
 - **Object model** → Class
 - **Database** → ER
+- **Metrics/trends** → XY Chart
 
 **Step 2: Create diagram file**
 ```bash
@@ -265,10 +292,10 @@ Available Beautiful-Mermaid Themes:
  8. nord
  9. nord-light
 10. dracula
-11. github-dark
-12. github-light
-13. solarized-dark
-14. solarized-light
+11. github-light
+12. github-dark
+13. solarized-light
+14. solarized-dark
 15. one-dark
 
 Total: 15 themes
@@ -432,6 +459,16 @@ node scripts/render.mjs \
   --theme zinc-light
 ```
 
+### 6. Interactive Metrics Chart
+
+```bash
+node scripts/render.mjs \
+  --input metrics.mmd \
+  --output metrics.svg \
+  --theme github-light \
+  --interactive
+```
+
 ---
 
 ## Troubleshooting
@@ -486,6 +523,7 @@ Template files for quick diagram creation:
 - `example_diagrams/state.mmd` - State diagram template
 - `example_diagrams/class.mmd` - Class diagram template
 - `example_diagrams/er.mmd` - ER diagram template
+- `example_diagrams/xychart.mmd` - XY bar and line chart template
 
 ---
 

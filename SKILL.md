@@ -1,16 +1,13 @@
 ---
 name: pretty-mermaid
 description: |
-  Render beautiful Mermaid diagrams as SVG or ASCII art using the beautiful-mermaid library.
-  Supports 15 themes, 6 diagram types (flowchart, sequence, state, class, ER, XY charts), and ultra-fast rendering.
-
-  Use this skill when:
-  1. User asks to "render a mermaid diagram" or provides .mmd files
-  2. User requests "create a flowchart/sequence/state/class/ER/XY chart"
-  3. User wants to "apply a theme" or "beautify a diagram"
-  4. User needs to "batch process multiple diagrams"
-  5. User mentions "ASCII diagram" or "terminal-friendly diagram"
-  6. User wants to visualize architecture, workflows, data models, or chart data
+  Generate and render Mermaid diagrams for architecture docs, READMEs, PRs,
+  terminals, and CI as themed SVG or ASCII/Unicode art. Use this skill whenever
+  the user provides Mermaid code or .mmd files; asks for a flowchart,
+  sequence/state/class diagram, ERD, XY chart, or architecture/workflow/data-model
+  visualization; or wants to beautify, theme, batch-convert, or make a diagram
+  terminal-friendly. Runs locally without a browser or DOM, with 15 built-in
+  themes and custom colors.
 ---
 
 # Pretty Mermaid

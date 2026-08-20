@@ -139,7 +139,7 @@ async function main() {
   const { renderMermaidSVG, renderMermaidASCII, THEMES } = await loadBeautifulMermaid();
   const input = readFileSync(opts.input, 'utf8');
 
-  if (opts.theme && !THEMES[opts.theme]) {
+  if (opts.theme && !Object.prototype.hasOwnProperty.call(THEMES, opts.theme)) {
     throw new Error(`Unknown theme: ${opts.theme}. Run node scripts/themes.mjs to list themes.`);
   }
 

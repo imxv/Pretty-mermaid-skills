@@ -192,7 +192,7 @@ async function main() {
   const opts = parseArgs();
   const lib = await loadBeautifulMermaid();
 
-  if (opts.theme && !lib.THEMES[opts.theme]) {
+  if (opts.theme && !Object.prototype.hasOwnProperty.call(lib.THEMES, opts.theme)) {
     throw new Error(`Unknown theme: ${opts.theme}. Run node scripts/themes.mjs to list themes.`);
   }
 

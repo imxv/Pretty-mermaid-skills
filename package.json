@@ -8,8 +8,13 @@
     "batch-mermaid": "./scripts/batch.mjs",
     "list-mermaid-themes": "./scripts/themes.mjs"
   },
+  "engines": {
+    "node": ">=16"
+  },
   "scripts": {
-    "test": "node scripts/smoke-test.mjs"
+    "gallery": "node scripts/generate-theme-gallery.mjs",
+    "test": "node scripts/smoke-test.mjs",
+    "validate": "node scripts/validate-docs.mjs"
   },
   "dependencies": {
     "beautiful-mermaid": "^1.1.3"

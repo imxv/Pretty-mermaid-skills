@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 742.8330000000001 207.165" width="742.8330000000001" height="207.165" style="--bg:#fdf6e3;--fg:#657b83;--line:#93a1a1;--accent:#268bd2;--muted:#93a1a1;background:var(--bg)">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap');
+  text { font-family: 'Inter', system-ui, sans-serif; }
+  svg {
+    /* Derived from --bg and --fg (overridable via --line, --accent, etc.) */
+    --_text:          var(--fg);
+    --_text-sec:      var(--muted, color-mix(in srgb, var(--fg) 60%, var(--bg)));
+    --_text-muted:    var(--muted, color-mix(in srgb, var(--fg) 40%, var(--bg)));
+    --_text-faint:    color-mix(in srgb, var(--fg) 25%, var(--bg));
+    --_line:          var(--line, color-mix(in srgb, var(--fg) 50%, var(--bg)));
+    --_arrow:         var(--accent, color-mix(in srgb, var(--fg) 85%, var(--bg)));
+    --_node-fill:     var(--surface, color-mix(in srgb, var(--fg) 3%, var(--bg)));
+    --_node-stroke:   var(--border, color-mix(in srgb, var(--fg) 20%, var(--bg)));
+    --_group-fill:    var(--bg);
+    --_group-hdr:     color-mix(in srgb, var(--fg) 5%, var(--bg));
+    --_inner-stroke:  color-mix(in srgb, var(--fg) 12%, var(--bg));
+    --_key-badge:     color-mix(in srgb, var(--fg) 10%, var(--bg));
+  }
+</style>
+<defs>
+  <marker id="arrowhead" markerWidth="8" markerHeight="5" refX="7" refY="2.5" orient="auto">
+    <polygon points="0 0, 8 2.5, 0 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round" />
+  </marker>
+  <marker id="arrowhead-start" markerWidth="8" markerHeight="5" refX="1" refY="2.5" orient="auto-start-reverse">
+    <polygon points="8 0, 0 2.5, 8 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round" />
+  </marker>
+</defs>
+<polyline class="edge" data-from="Idea" data-to="Write" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="95.14399999999999,103.5825 135.144,103.5825" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="Write" data-to="Output" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="260.827,103.5825 300.827,103.5825" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="Output" data-to="SVG" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Docs" points="426.7978333333333,78.38833333333332 479.99199999999996,78.38833333333332 479.99199999999996,73.1325 574.9060000000001,73.1325" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="Output" data-to="ASCII" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Terminal" points="426.7978333333333,128.77666666666664 479.9920000000001,128.77666666666664 479.9920000000001,134.0325 574.9060000000001,134.0325" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<g class="edge-label" data-from="Output" data-to="SVG" data-label="Docs">
+  <rect x="487.99199999999996" y="57.1325" width="42.598" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="509.29099999999994" y="72.2825" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Docs</text>
+</g>
+<g class="edge-label" data-from="Output" data-to="ASCII" data-label="Terminal">
+  <rect x="487.9920000000001" y="118.0325" width="59.23000000000001" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="517.6070000000001" y="133.1825" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Terminal</text>
+</g>
+<g class="node" data-id="Idea" data-label="Idea" data-shape="stadium">
+  <rect x="28" y="85.1325" width="67.14399999999999" height="36.900000000000006" rx="18.450000000000003" ry="18.450000000000003" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="61.571999999999996" y="103.5825" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Idea</text>
+</g>
+<g class="node" data-id="Write" data-label="Write Mermaid" data-shape="rectangle">
+  <rect x="135.144" y="85.1325" width="125.68299999999998" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="197.9855" y="103.5825" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Write Mermaid</text>
+</g>
+<g class="node" data-id="Output" data-label="Choose Output" data-shape="diamond">
+  <polygon points="376.4095,28 451.99199999999996,103.5825 376.4095,179.165 300.827,103.5825" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="376.4095" y="103.5825" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Choose Output</text>
+</g>
+<g class="node" data-id="SVG" data-label="Themed SVG" data-shape="rectangle">
+  <rect x="574.9060000000001" y="54.68249999999999" width="118.27299999999998" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="634.0425" y="73.1325" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Themed SVG</text>
+</g>
+<g class="node" data-id="ASCII" data-label="ASCII / Unicode" data-shape="rectangle">
+  <rect x="574.9060000000001" y="115.5825" width="131.611" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="640.7115000000001" y="134.0325" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">ASCII / Unicode</text>
+</g>
+</svg>

@@ -8,7 +8,10 @@
     "batch-mermaid": "./scripts/batch.mjs",
     "list-mermaid-themes": "./scripts/themes.mjs"
   },
+  "scripts": {
+    "test": "node scripts/smoke-test.mjs"
+  },
   "dependencies": {
-    "beautiful-mermaid": "^0.1.3"
+    "beautiful-mermaid": "^1.1.3"
   }
 }

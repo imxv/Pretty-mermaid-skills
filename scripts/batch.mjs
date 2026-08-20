@@ -1,12 +1,33 @@
 #!/usr/bin/env node
 
 import { execSync } from 'child_process';
-import { dirname, join, resolve } from 'path';
+import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync } from 'fs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const skillRoot = join(__dirname, '..');
+
+function toAsciiTheme(colors) {
+  if (!colors) return undefined;
+
+  const border = colors.border ?? colors.fg;
+  const line = colors.line ?? colors.fg;
+  const arrow = colors.accent ?? colors.line ?? colors.fg;
+  const corner = colors.border ?? colors.line ?? colors.fg;
+  const junction = colors.accent ?? colors.border ?? colors.line ?? colors.fg;
+
+  return {
+    ...(colors.fg && { fg: colors.fg }),
+    ...(border && { border }),
+    ...(line && { line }),
+    ...(arrow && { arrow }),
+    ...(colors.accent && { accent: colors.accent }),
+    ...(colors.bg && { bg: colors.bg }),
+    ...(corner && { corner }),
+    ...(junction && { junction }),
+  };
+}
 
 async function loadBeautifulMermaid() {
   try {
@@ -45,8 +66,23 @@ function parseArgs() {
     theme: null,
     bg: null,
     fg: null,
+    line: null,
+    accent: null,
+    muted: null,
+    surface: null,
+    border: null,
+    font: 'Inter',
     transparent: false,
     useAscii: false,
+    paddingX: 5,
+    paddingY: 5,
+    boxBorderPadding: 1,
+    colorMode: 'auto',
+    padding: 40,
+    nodeSpacing: 24,
+    layerSpacing: 40,
+    componentSpacing: 24,
+    interactive: false,
     workers: 4,
   };
 
@@ -61,8 +97,23 @@ function parseArgs() {
       case '--theme': case '-t': opts.theme = val; i++; break;
       case '--bg': opts.bg = val; i++; break;
       case '--fg': opts.fg = val; i++; break;
+      case '--line': opts.line = val; i++; break;
+      case '--accent': opts.accent = val; i++; break;
+      case '--muted': opts.muted = val; i++; break;
+      case '--surface': opts.surface = val; i++; break;
+      case '--border': opts.border = val; i++; break;
+      case '--font': opts.font = val; i++; break;
       case '--transparent': opts.transparent = true; break;
       case '--use-ascii': opts.useAscii = true; break;
+      case '--padding-x': opts.paddingX = parseInt(val); i++; break;
+      case '--padding-y': opts.paddingY = parseInt(val); i++; break;
+      case '--box-border-padding': opts.boxBorderPadding = parseInt(val); i++; break;
+      case '--color-mode': opts.colorMode = val; i++; break;
+      case '--padding': opts.padding = parseInt(val); i++; break;
+      case '--node-spacing': opts.nodeSpacing = parseInt(val); i++; break;
+      case '--layer-spacing': opts.layerSpacing = parseInt(val); i++; break;
+      case '--component-spacing': opts.componentSpacing = parseInt(val); i++; break;
+      case '--interactive': opts.interactive = true; break;
       case '--workers': case '-w': opts.workers = parseInt(val); i++; break;
       case '--help': case '-h':
         console.log(`Usage: node batch.mjs --input-dir <dir> --output-dir <dir> [options]
@@ -74,8 +125,23 @@ Options:
   -t, --theme <name>       Theme name (e.g. tokyo-night, dracula)
       --bg <hex>           Background color
       --fg <hex>           Foreground color
+      --line <hex>         Edge/connector color
+      --accent <hex>       Arrow heads and highlights color
+      --muted <hex>        Secondary text color
+      --surface <hex>      Node fill tint color
+      --border <hex>       Node stroke color
+      --font <name>        Font family (default: Inter)
       --transparent        Transparent background (SVG only)
       --use-ascii          Pure ASCII instead of Unicode (ASCII only)
+      --padding-x <n>      Horizontal spacing (ASCII only, default: 5)
+      --padding-y <n>      Vertical spacing (ASCII only, default: 5)
+      --box-border-padding <n>  Padding inside node boxes (ASCII only, default: 1)
+      --color-mode <mode>  ASCII colors: none | auto | ansi16 | ansi256 | truecolor | html
+      --padding <n>        SVG canvas padding in px (default: 40)
+      --node-spacing <n>   SVG horizontal node spacing (default: 24)
+      --layer-spacing <n>  SVG vertical layer spacing (default: 40)
+      --component-spacing <n>  SVG disconnected component spacing (default: 24)
+      --interactive        Enable XY chart hover tooltips (SVG only)
   -w, --workers <n>        Parallel workers (default: 4)`);
         process.exit(0);
     }
@@ -98,25 +164,51 @@ Options:
 }
 
 async function renderFile(file, inputDir, outputDir, opts, lib) {
-  const { renderMermaid, renderMermaidAscii, THEMES } = lib;
+  const { renderMermaidSVG, renderMermaidASCII, THEMES } = lib;
   const inputPath = join(inputDir, file);
   const ext = opts.format === 'svg' ? '.svg' : '.txt';
   const outputPath = join(outputDir, file.replace(/\.mmd$/, ext));
   const input = readFileSync(inputPath, 'utf8');
+  const theme = opts.theme ? THEMES[opts.theme] : undefined;
+  const customColors = {
+    ...(opts.bg && { bg: opts.bg }),
+    ...(opts.fg && { fg: opts.fg }),
+    ...(opts.line && { line: opts.line }),
+    ...(opts.accent && { accent: opts.accent }),
+    ...(opts.border && { border: opts.border }),
+  };
+  const asciiColors = theme || (Object.keys(customColors).length > 0 ? customColors : undefined);
 
   if (opts.format === 'ascii') {
-    const ascii = renderMermaidAscii(input, { useAscii: opts.useAscii });
+    const ascii = renderMermaidASCII(input, {
+      useAscii: opts.useAscii,
+      paddingX: opts.paddingX,
+      paddingY: opts.paddingY,
+      boxBorderPadding: opts.boxBorderPadding,
+      colorMode: opts.colorMode,
+      theme: toAsciiTheme(asciiColors),
+    });
     writeFileSync(outputPath, ascii);
   } else {
-    const theme = opts.theme ? THEMES[opts.theme] : undefined;
     const colors = theme || {
       ...(opts.bg && { bg: opts.bg }),
       ...(opts.fg && { fg: opts.fg }),
+      ...(opts.line && { line: opts.line }),
+      ...(opts.accent && { accent: opts.accent }),
+      ...(opts.muted && { muted: opts.muted }),
+      ...(opts.surface && { surface: opts.surface }),
+      ...(opts.border && { border: opts.border }),
     };
 
-    const svg = await renderMermaid(input, {
+    const svg = renderMermaidSVG(input, {
       ...colors,
+      font: opts.font,
       transparent: opts.transparent,
+      padding: opts.padding,
+      nodeSpacing: opts.nodeSpacing,
+      layerSpacing: opts.layerSpacing,
+      componentSpacing: opts.componentSpacing,
+      interactive: opts.interactive,
     });
     writeFileSync(outputPath, svg);
   }
@@ -125,6 +217,10 @@ async function renderFile(file, inputDir, outputDir, opts, lib) {
 async function main() {
   const opts = parseArgs();
   const lib = await loadBeautifulMermaid();
+
+  if (opts.theme && !Object.prototype.hasOwnProperty.call(lib.THEMES, opts.theme)) {
+    throw new Error(`Unknown theme: ${opts.theme}. Run node scripts/themes.mjs to list themes.`);
+  }
 
   mkdirSync(opts.outputDir, { recursive: true });
 

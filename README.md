@@ -23,7 +23,7 @@ A Mermaid diagram rendering skill for AI, supporting both SVG and ASCII output f
 
 - 📊 **Multi-format Support**: SVG and ASCII rendering export
 - 🎨 **Rich Themes**: 15 built-in themes for different scenarios
-- 📈 **Full Diagram Support**: Flowchart, Sequence, State, Class, ER and more
+- 📈 **Six Diagram Types**: Flowchart, Sequence, State, Class, ER, and XY charts
 - ⚡ **High Performance**: Batch parallel rendering
 - 📚 **Ready to Use**: Complete templates and detailed documentation
 
@@ -32,8 +32,8 @@ A Mermaid diagram rendering skill for AI, supporting both SVG and ASCII output f
 | :--- | :--- | :--- |
 | zinc-light | zinc-dark | nord |
 | tokyo-night-light | tokyo-night | nord-light |
-| cappuccin-latte | tokyo-night-storm | dracula |
-| github-light | cappuccin-mocha | one-dark |
+| catppuccin-latte | tokyo-night-storm | dracula |
+| github-light | catppuccin-mocha | one-dark |
 | solarized-light | github-dark | |
 | | solarized-dark | |
 
@@ -88,12 +88,15 @@ node scripts/batch.mjs \
 
 ## 📂 Examples
 
-Check the 5 template files in `assets/example_diagrams/`:
+Check the 6 template files in `assets/example_diagrams/`:
 - `flowchart.mmd` - Flowchart
 - `sequence.mmd` - Sequence Diagram
 - `state.mmd` - State Diagram
 - `class.mmd` - Class Diagram
 - `er.mmd` - ER Diagram
+- `xychart.mmd` - XY Chart (bar and line)
+
+The renderer also supports CJK state names, multiline labels, `linkStyle`, configurable ELK layout spacing, interactive XY chart tooltips, and ANSI-colored terminal output.
 
 ## 📚 Documentation
 See [SKILL.md](SKILL.md) for detailed usage guide.

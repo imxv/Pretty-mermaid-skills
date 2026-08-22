@@ -4,7 +4,8 @@ export const DEFAULT_PNG_WIDTH = 800;
 export const MIN_PNG_WIDTH = 100;
 export const MAX_PNG_WIDTH = 10000;
 
-const CUSTOM_PROPERTY = /(--[\w-]+)\s*:\s*([^;}]+)/g;
+const CUSTOM_PROPERTY = /(--[\w-]+)\s*:\s*([^;}]+);?/g;
+const CSS_RULE = /([^{}]+)\{([^{}]*)\}/g;
 const HEX_COLOR = /^#([\da-f]{3,4}|[\da-f]{6}|[\da-f]{8})$/i;
 
 export function parsePngWidth(value = DEFAULT_PNG_WIDTH) {
@@ -27,15 +28,94 @@ export function prepareSvgForPng(svg) {
     throw new Error('PNG conversion requires a valid SVG document.');
   }
 
-  const variables = new Map();
-  for (const match of svg.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/gi)) {
-    collectCustomProperties(match[1], variables);
+  const stylesheets = [...svg.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/gi)]
+    .map(match => stripCssImports(match[1]));
+  const rootVariables = new Map();
+  const scopedVariables = new Map();
+  for (const css of stylesheets) {
+    collectRootCustomProperties(css, rootVariables);
+    collectScopedCustomProperties(css, scopedVariables);
   }
   const rootStyle = rootTag.match(/\sstyle=(['"])(.*?)\1/i)?.[2] ?? '';
-  collectCustomProperties(rootStyle, variables);
+  collectCustomProperties(rootStyle, rootVariables);
+  const resolveRootVariable = createVariableResolver(rootVariables);
 
+  const prepared = mapCssContexts(
+    svg,
+    css => resolveStylesheet(css, rootVariables, scopedVariables),
+    (name, value) => {
+      const variables = new Map(rootVariables);
+      if (name.toLowerCase() === 'style') collectCustomProperties(value, variables);
+      const resolvedValue = resolveCssValue(value, createVariableResolver(variables));
+      return resolvedValue.replace(CUSTOM_PROPERTY, '');
+    },
+  );
+
+  let unresolved;
+  forEachCssContext(prepared, context => {
+    unresolved ||= context.match(/(?:^|[^-\w])((?:var|color-mix)\s*\()/i)?.[1];
+  });
+  if (unresolved) {
+    throw new Error(`PNG conversion cannot resolve CSS expression ${unresolved}`);
+  }
+
+  const backgroundValue = rootStyle.match(/(?:^|;)\s*background(?:-color)?\s*:\s*([^;]+)/i)?.[1];
+  const background = backgroundValue
+    ? resolveCssValue(backgroundValue, resolveRootVariable)
+    : undefined;
+
+  return { svg: prepared, background };
+}
+
+export function renderSvgForPng(svg, width = DEFAULT_PNG_WIDTH) {
+  const validWidth = parsePngWidth(width);
+  const prepared = prepareSvgForPng(svg);
+  const renderer = new Resvg(prepared.svg, {
+    fitTo: { mode: 'width', value: validWidth },
+    ...(prepared.background && { background: prepared.background }),
+    font: { loadSystemFonts: true },
+  });
+
+  return renderer.render();
+}
+
+export function renderSvgToPng(svg, width = DEFAULT_PNG_WIDTH) {
+  return Buffer.from(renderSvgForPng(svg, width).asPng());
+}
+
+function collectCustomProperties(source, variables) {
+  for (const match of source.matchAll(CUSTOM_PROPERTY)) {
+    variables.set(match[1], match[2].trim());
+  }
+}
+
+function collectRootCustomProperties(css, variables) {
+  for (const match of css.matchAll(CSS_RULE)) {
+    const selectors = match[1].split(',').map(selector => selector.trim());
+    if (selectors.some(isRootSelector)) {
+      collectCustomProperties(match[2], variables);
+    }
+  }
+}
+
+function isRootSelector(selector) {
+  return selector === 'svg' || selector === ':root';
+}
+
+function collectScopedCustomProperties(css, scopedVariables) {
+  for (const match of css.matchAll(CSS_RULE)) {
+    for (const selector of match[1].split(',').map(value => value.trim())) {
+      if (isRootSelector(selector)) continue;
+      if (!scopedVariables.has(selector)) scopedVariables.set(selector, new Map());
+      collectCustomProperties(match[2], scopedVariables.get(selector));
+    }
+  }
+}
+
+function createVariableResolver(variables) {
   const resolved = new Map();
-  const resolveVariable = (name, stack = []) => {
+
+  return function resolveVariable(name, stack = []) {
     if (resolved.has(name)) return resolved.get(name);
     if (stack.includes(name)) {
       throw new Error(`Circular CSS variable reference: ${[...stack, name].join(' -> ')}`);
@@ -48,45 +128,30 @@ export function prepareSvgForPng(svg) {
     resolved.set(name, value);
     return value;
   };
-
-  const prepared = mapCssContexts(svg, context => {
-    let resolvedContext = resolveCssValue(context, resolveVariable);
-    resolvedContext = resolvedContext.replace(/@import\s+url\([^;]*\);?/gi, '');
-    return resolvedContext.replace(CUSTOM_PROPERTY, '');
-  });
-
-  let unresolved;
-  forEachCssContext(prepared, context => {
-    unresolved ||= context.match(/(?:var|color-mix)\s*\(/i)?.[0];
-  });
-  if (unresolved) {
-    throw new Error(`PNG conversion cannot resolve CSS expression ${unresolved}`);
-  }
-
-  const backgroundValue = rootStyle.match(/(?:^|;)\s*background(?:-color)?\s*:\s*([^;]+)/i)?.[1];
-  const background = backgroundValue
-    ? resolveCssValue(backgroundValue, resolveVariable)
-    : undefined;
-
-  return { svg: prepared, background };
 }
 
-export function renderSvgToPng(svg, width = DEFAULT_PNG_WIDTH) {
-  const validWidth = parsePngWidth(width);
-  const prepared = prepareSvgForPng(svg);
-  const renderer = new Resvg(prepared.svg, {
-    fitTo: { mode: 'width', value: validWidth },
-    ...(prepared.background && { background: prepared.background }),
-    font: { loadSystemFonts: true },
-  });
+function resolveStylesheet(css, rootVariables, scopedVariables) {
+  const withoutImports = stripCssImports(css);
 
-  return Buffer.from(renderer.render().asPng());
+  return withoutImports.replace(CSS_RULE, (_, selectorList, body) => (
+    selectorList
+      .split(',')
+      .map(value => value.trim())
+      .map(selector => {
+        const variables = new Map(rootVariables);
+        for (const [name, value] of scopedVariables.get(selector) ?? []) {
+          variables.set(name, value);
+        }
+        const resolvedBody = resolveCssValue(body, createVariableResolver(variables))
+          .replace(CUSTOM_PROPERTY, '');
+        return `${selector} {${resolvedBody}}`;
+      })
+      .join('\n')
+  ));
 }
 
-function collectCustomProperties(source, variables) {
-  for (const match of source.matchAll(CUSTOM_PROPERTY)) {
-    variables.set(match[1], match[2].trim());
-  }
+function stripCssImports(css) {
+  return css.replace(/@import\s+url\([^;]*\);?/gi, '');
 }
 
 function forEachCssContext(svg, visit) {
@@ -98,13 +163,13 @@ function forEachCssContext(svg, visit) {
   }
 }
 
-function mapCssContexts(svg, transform) {
+function mapCssContexts(svg, transformStylesheet, transformAttribute) {
   return svg
     .replace(/(<style\b[^>]*>)([\s\S]*?)(<\/style>)/gi, (_, open, css, close) => (
-      `${open}${transform(css)}${close}`
+      `${open}${transformStylesheet(css)}${close}`
     ))
     .replace(/(\s)(style|fill|stroke|filter)=(['"])(.*?)\3/gi, (_, space, name, quote, value) => (
-      `${space}${name}=${quote}${transform(value)}${quote}`
+      `${space}${name}=${quote}${transformAttribute(name, value)}${quote}`
     ));
 }
 
@@ -128,12 +193,16 @@ function resolveCssValue(value, resolveVariable, stack = []) {
 }
 
 function replaceCssFunctions(source, functionName, replace) {
-  const prefix = `${functionName}(`;
+  const prefix = `${functionName.toLowerCase()}(`;
+  const lowerSource = source.toLowerCase();
   let cursor = 0;
   let output = '';
 
   while (cursor < source.length) {
-    const start = source.indexOf(prefix, cursor);
+    let start = lowerSource.indexOf(prefix, cursor);
+    while (start !== -1 && start > 0 && /[-_a-z0-9]/i.test(source[start - 1])) {
+      start = lowerSource.indexOf(prefix, start + prefix.length);
+    }
     if (start === -1) {
       output += source.slice(cursor);
       break;
@@ -188,12 +257,13 @@ function mixCssColors(expression) {
 
   const firstWeight = first.weight / total;
   const secondWeight = second.weight / total;
-  const alpha = first.color.a * firstWeight + second.color.a * secondWeight;
-  if (alpha === 0) return 'transparent';
+  const mixedAlpha = first.color.a * firstWeight + second.color.a * secondWeight;
+  if (mixedAlpha === 0) return 'transparent';
 
   const channel = key => Math.round(
-    (first.color[key] * first.color.a * firstWeight + second.color[key] * second.color.a * secondWeight) / alpha,
+    (first.color[key] * first.color.a * firstWeight + second.color[key] * second.color.a * secondWeight) / mixedAlpha,
   );
+  const alpha = mixedAlpha * Math.min(1, total / 100);
   const color = { r: channel('r'), g: channel('g'), b: channel('b'), a: alpha };
   return formatColor(color);
 }
@@ -202,7 +272,7 @@ function parseWeightedColor(value) {
   const match = value.match(/^(.*?)\s+([\d.]+)%$/);
   const colorText = match ? match[1].trim() : value.trim();
   const weight = match ? Number(match[2]) : undefined;
-  if (weight !== undefined && (!Number.isFinite(weight) || weight < 0)) {
+  if (weight !== undefined && (!Number.isFinite(weight) || weight < 0 || weight > 100)) {
     throw new Error(`Invalid CSS color weight: ${value}`);
   }
 

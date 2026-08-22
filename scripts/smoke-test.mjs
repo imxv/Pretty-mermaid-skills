@@ -11,7 +11,7 @@ import {
   renderMermaidSVG,
   THEMES,
 } from 'beautiful-mermaid';
-import { parsePngWidth, prepareSvgForPng, renderSvgToPng } from './png.mjs';
+import { parsePngWidth, prepareSvgForPng, renderSvgForPng, renderSvgToPng } from './png.mjs';
 
 const scriptsDir = dirname(fileURLToPath(import.meta.url));
 const examplesDir = join(scriptsDir, '..', 'assets', 'example_diagrams');
@@ -45,15 +45,44 @@ assert.match(cssLikeLabelPrepared, /var\(--user-label\)/);
 assert.match(cssLikeLabelPrepared, /color-mix\(in srgb, red, blue\)/);
 assert.ok(renderSvgToPng(cssLikeLabelSvg).subarray(0, 8).equals(pngSignature));
 
-const literalBackgroundSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" style="background:#fff"><rect width="10" height="10" fill="#000"/></svg>';
+const literalBackgroundSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" style="background:#fff"></svg>';
 assert.equal(prepareSvgForPng(literalBackgroundSvg).background, '#fff');
-assert.ok(renderSvgToPng(literalBackgroundSvg, 100).subarray(0, 8).equals(pngSignature));
+assertRenderedPixel(literalBackgroundSvg, [255, 255, 255, 255]);
 
 const stylesheetOverrideSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" style="background:var(--bg)"><style>svg { --bg:#fff; } svg { --bg:#000; }</style></svg>';
 assert.equal(prepareSvgForPng(stylesheetOverrideSvg).background, '#000');
+assertRenderedPixel(stylesheetOverrideSvg, [0, 0, 0, 255]);
 
 const inlineOverrideSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" style="--bg:#123;background:var(--bg)"><style>svg { --bg:#fff; }</style></svg>';
 assert.equal(prepareSvgForPng(inlineOverrideSvg).background, '#123');
+assertRenderedPixel(inlineOverrideSvg, [17, 34, 51, 255]);
+
+const selectorScopeSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" style="background:var(--bg)"><style>svg { --bg:#fff; } rect { --bg:#000; fill:var(--bg); }</style><rect width="5" height="5"/></svg>';
+const selectorScopePrepared = prepareSvgForPng(selectorScopeSvg);
+assert.equal(selectorScopePrepared.background, '#fff');
+assert.match(selectorScopePrepared.svg, /rect \{\s*fill:#000;/);
+
+const mixedCaseSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" style="--bg:#fff;background:VAR(--bg)"><style>rect { fill:COLOR-MIX(in srgb, #fff 50%, #000); }</style><rect width="5" height="5" fill="myvar(--bg)" filter="--var(--bg)"/></svg>';
+const mixedCasePrepared = prepareSvgForPng(mixedCaseSvg);
+assert.equal(mixedCasePrepared.background, '#fff');
+assert.match(mixedCasePrepared.svg, /fill:#808080/);
+assert.match(mixedCasePrepared.svg, /fill="myvar\(--bg\)"/);
+assert.match(mixedCasePrepared.svg, /filter="--var\(--bg\)"/);
+
+const partialMixSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" style="background:color-mix(in srgb, #f00 20%, #00f 20%)"></svg>';
+assert.equal(prepareSvgForPng(partialMixSvg).background, 'rgba(128, 0, 128, 0.4)');
+// Resvg exposes premultiplied RGBA pixels, so 128 at 40% alpha is stored as 51.
+assertRenderedPixel(partialMixSvg, [51, 0, 51, 102]);
+assert.throws(
+  () => prepareSvgForPng('<svg xmlns="http://www.w3.org/2000/svg" style="background:color-mix(in srgb, #f00 120%, #00f)"></svg>'),
+  /Invalid CSS color weight/,
+);
+
+function assertRenderedPixel(svg, expectedRgba) {
+  const rendered = renderSvgForPng(svg, 100);
+  assert.ok(rendered.asPng().subarray(0, 8).equals(pngSignature));
+  assert.deepEqual([...rendered.pixels.subarray(0, 4)], expectedRgba);
+}
 
 const cliTestDir = mkdtempSync(join(tmpdir(), 'pretty-mermaid-smoke-'));
 const flowchartPath = join(examplesDir, 'flowchart.mmd');

@@ -4,6 +4,7 @@ import { execSync } from 'child_process';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync } from 'fs';
+import { DEFAULT_PNG_WIDTH, parsePngWidth, renderSvgToPng } from './png.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const skillRoot = join(__dirname, '..');
@@ -84,6 +85,7 @@ function parseArgs() {
     componentSpacing: 24,
     interactive: false,
     workers: 4,
+    width: DEFAULT_PNG_WIDTH,
   };
 
   for (let i = 0; i < args.length; i++) {
@@ -115,13 +117,16 @@ function parseArgs() {
       case '--component-spacing': opts.componentSpacing = parseInt(val); i++; break;
       case '--interactive': opts.interactive = true; break;
       case '--workers': case '-w': opts.workers = parseInt(val); i++; break;
+      case '--width':
+        if (val === undefined) throw new Error('--width requires a value.');
+        opts.width = val; i++; break;
       case '--help': case '-h':
         console.log(`Usage: node batch.mjs --input-dir <dir> --output-dir <dir> [options]
 
 Options:
   -i, --input-dir <dir>    Input directory containing .mmd files [required]
   -o, --output-dir <dir>   Output directory for rendered files [required]
-  -f, --format <fmt>       Output format: svg | ascii (default: svg)
+  -f, --format <fmt>       Output format: svg | png | ascii (default: svg)
   -t, --theme <name>       Theme name (e.g. tokyo-night, dracula)
       --bg <hex>           Background color
       --fg <hex>           Foreground color
@@ -131,7 +136,8 @@ Options:
       --surface <hex>      Node fill tint color
       --border <hex>       Node stroke color
       --font <name>        Font family (default: Inter)
-      --transparent        Transparent background (SVG only)
+      --transparent        Transparent background (SVG and PNG)
+      --width <n>          PNG width in pixels (100-10000, default: 800)
       --use-ascii          Pure ASCII instead of Unicode (ASCII only)
       --padding-x <n>      Horizontal spacing (ASCII only, default: 5)
       --padding-y <n>      Vertical spacing (ASCII only, default: 5)
@@ -160,13 +166,22 @@ Options:
     process.exit(1);
   }
 
+  if (!['svg', 'png', 'ascii'].includes(opts.format)) {
+    console.error(`Error: Unsupported format: ${opts.format}. Use svg, png, or ascii.`);
+    process.exit(1);
+  }
+
+  if (opts.format === 'png') {
+    opts.width = parsePngWidth(opts.width);
+  }
+
   return opts;
 }
 
 async function renderFile(file, inputDir, outputDir, opts, lib) {
   const { renderMermaidSVG, renderMermaidASCII, THEMES } = lib;
   const inputPath = join(inputDir, file);
-  const ext = opts.format === 'svg' ? '.svg' : '.txt';
+  const ext = opts.format === 'svg' ? '.svg' : opts.format === 'png' ? '.png' : '.txt';
   const outputPath = join(outputDir, file.replace(/\.mmd$/, ext));
   const input = readFileSync(inputPath, 'utf8');
   const theme = opts.theme ? THEMES[opts.theme] : undefined;
@@ -210,7 +225,7 @@ async function renderFile(file, inputDir, outputDir, opts, lib) {
       componentSpacing: opts.componentSpacing,
       interactive: opts.interactive,
     });
-    writeFileSync(outputPath, svg);
+    writeFileSync(outputPath, opts.format === 'png' ? renderSvgToPng(svg, opts.width) : svg);
   }
 }
 

@@ -2,7 +2,7 @@
 name: pretty-mermaid
 description: |
   Generate and render Mermaid diagrams for architecture docs, READMEs, PRs,
-  terminals, and CI as themed SVG or ASCII/Unicode art. Use this skill whenever
+  terminals, chats, and CI as themed SVG, PNG, or ASCII/Unicode art. Use this skill whenever
   the user provides Mermaid code or .mmd files; asks for a flowchart,
   sequence/state/class diagram, ERD, XY chart, or architecture/workflow/data-model
   visualization; or wants to beautify, theme, batch-convert, or make a diagram
@@ -12,7 +12,7 @@ description: |
 
 # Pretty Mermaid
 
-Create or render Mermaid diagrams with the bundled Node.js CLI. Use SVG for documentation and presentations; use ASCII or Unicode for terminals and plain text.
+Create or render Mermaid diagrams with the bundled Node.js CLI. Use SVG for scalable documentation, PNG for sharing or raster-only consumers, and ASCII or Unicode for terminals and plain text.
 
 ## Working directory
 
@@ -48,6 +48,7 @@ Read `references/DIAGRAM_TYPES.md` when authoring non-trivial Mermaid syntax.
 | Output | Best for | Notes |
 | --- | --- | --- |
 | SVG | READMEs, docs, slides, websites | Scalable, themed, supports transparency |
+| PNG | Chats, previews, raster-only tools | Set `--format png`; no external converter required |
 | Unicode | Modern terminals and readable text previews | Default ASCII renderer output |
 | Plain ASCII | Logs and restricted terminals | Add `--use-ascii` |
 | ANSI-colored text | Interactive terminals | Set `--color-mode` |
@@ -82,6 +83,17 @@ node scripts/render.mjs \
 ```
 
 Add `--use-ascii` when Unicode box-drawing characters are not acceptable.
+
+### Render PNG
+
+```bash
+node scripts/render.mjs \
+  --input diagram.mmd \
+  --output diagram.png \
+  --format png \
+  --width 1200 \
+  --theme tokyo-night
+```
 
 ### Batch render a directory
 
@@ -129,6 +141,13 @@ Read `references/THEMES.md` or open `docs/THEME_GALLERY.md` when visual theme ch
 | `--component-spacing <n>` | Separate disconnected components |
 | `--interactive` | Enable XY chart hover tooltips |
 
+### PNG
+
+| Option | Purpose |
+| --- | --- |
+| `--width <n>` | Set output width from 100 to 10000 pixels while preserving aspect ratio |
+| `--transparent` | Preserve a transparent background |
+
 ### Terminal output
 
 | Option | Purpose |
@@ -155,7 +174,7 @@ Run `node scripts/render.mjs --help` or `node scripts/batch.mjs --help` for the 
 After rendering:
 
 1. Confirm the command exits successfully and the output file is non-empty.
-2. Confirm SVG output begins with `<svg`; confirm text output contains visible diagram content.
+2. Confirm SVG output begins with `<svg`; confirm PNG output opens as a valid image; confirm text output contains visible diagram content.
 3. Inspect visual output when layout matters, especially long labels, CJK text, disconnected components, and XY charts.
 4. Confirm arrows, cardinalities, states, and labels match the source request.
 5. Report any renderer limitation instead of silently dropping unsupported syntax.
@@ -168,6 +187,7 @@ Run both `npm test` and `npm run validate` when changing this skill, its scripts
 - Unknown theme: run `node scripts/themes.mjs` and use an exact listed name.
 - Parse error: consult `references/DIAGRAM_TYPES.md`, reduce to the failing statement, then restore the diagram incrementally.
 - Crowded SVG: increase `--node-spacing`, `--layer-spacing`, or `--component-spacing`.
+- PNG color error: use concrete hex values for custom colors; unresolved external CSS variables cannot be rasterized.
 - Terminal color escape codes in redirected output: use `--color-mode none`.
 
 ## Reference routing

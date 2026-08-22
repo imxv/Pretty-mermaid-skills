@@ -4,9 +4,9 @@
 
 **为 AI Agent 打造的精美 Mermaid 图表**
 
-将 Mermaid 源码转换为精美 SVG 与终端友好的 ASCII——本地运行，无需浏览器。
+将 Mermaid 源码转换为精美 SVG、便于分享的 PNG 与终端友好的 ASCII——本地运行，无需浏览器。
 
-![Pretty Mermaid 将 Mermaid 源码转换为带主题的 SVG 和终端 ASCII 图表](assets/social-preview.png)
+![Pretty Mermaid 将 Mermaid 源码转换为带主题的 SVG、PNG 和终端 ASCII 图表](assets/social-preview.png)
 
 [![skills.sh](https://skills.sh/b/imxv/pretty-mermaid-skills)](https://www.skills.sh/imxv/pretty-mermaid-skills/pretty-mermaid)
 [![CI](https://github.com/imxv/Pretty-mermaid-skills/actions/workflows/ci.yml/badge.svg)](https://github.com/imxv/Pretty-mermaid-skills/actions/workflows/ci.yml)
@@ -29,13 +29,13 @@ npx skills add imxv/pretty-mermaid-skills@pretty-mermaid -g -y
 ## 为什么选择 Pretty Mermaid？
 
 - **专为 AI Agent 设计**：支持 Claude Code、Cursor、Codex、Gemini CLI 等环境
-- **一份源码，两种输出**：文档用精美 SVG，终端用 ASCII/Unicode
+- **一份源码，三种输出**：文档用精美 SVG，分享用 PNG，终端用 ASCII/Unicode
 - **无需浏览器**：本地渲染，不依赖 Chromium、Puppeteer 或 DOM
 - **灵活开箱即用**：15 种主题、自定义配色、六种图表类型和批量渲染
 
 ## ✨ 功能特性
 
-- 📊 **多格式支持**：支持 SVG 和 ASCII 渲染导出
+- 📊 **多格式支持**：支持 SVG、PNG 和 ASCII 渲染导出
 - 🎨 **丰富主题**：内置 15 种精美主题，满足不同场景需求
 - 📈 **六种图表类型**：支持 Flowchart、Sequence、State、Class、ER 和 XY Chart
 - ⚡ **高效渲染**：支持批量并行渲染，速度飞快
@@ -100,6 +100,16 @@ node scripts/render.mjs \
   --theme tokyo-night
 ```
 
+### 渲染 PNG
+```bash
+node scripts/render.mjs \
+  --input diagram.mmd \
+  --output output.png \
+  --format png \
+  --width 1200 \
+  --theme tokyo-night
+```
+
 ### 批量渲染
 ```bash
 node scripts/batch.mjs \
@@ -118,7 +128,7 @@ node scripts/batch.mjs \
 - `er.mmd` - ER 图
 - `xychart.mmd` - XY 图（柱状图与折线图）
 
-渲染器同时支持中日韩状态名称、多行标签、`linkStyle`、可配置的 ELK 布局间距、XY 图交互提示，以及带 ANSI 颜色的终端输出。
+PNG 由 Node.js 直接生成，无需安装外部转换工具。渲染器同时支持中日韩状态名称、多行标签、`linkStyle`、可配置的 ELK 布局间距、XY 图交互提示，以及带 ANSI 颜色的终端输出。
 
 ## 📚 完整文档
 

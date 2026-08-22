@@ -28,8 +28,11 @@ export function prepareSvgForPng(svg) {
   }
 
   const variables = new Map();
-  collectCustomProperties(rootTag, variables);
-  forEachCssContext(svg, context => collectCustomProperties(context, variables));
+  for (const match of svg.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/gi)) {
+    collectCustomProperties(match[1], variables);
+  }
+  const rootStyle = rootTag.match(/\sstyle=(['"])(.*?)\1/i)?.[2] ?? '';
+  collectCustomProperties(rootStyle, variables);
 
   const resolved = new Map();
   const resolveVariable = (name, stack = []) => {
@@ -60,8 +63,10 @@ export function prepareSvgForPng(svg) {
     throw new Error(`PNG conversion cannot resolve CSS expression ${unresolved}`);
   }
 
-  const hasOpaqueBackground = /\bbackground\s*:/i.test(rootTag);
-  const background = hasOpaqueBackground ? resolveVariable('--bg') : undefined;
+  const backgroundValue = rootStyle.match(/(?:^|;)\s*background(?:-color)?\s*:\s*([^;]+)/i)?.[1];
+  const background = backgroundValue
+    ? resolveCssValue(backgroundValue, resolveVariable)
+    : undefined;
 
   return { svg: prepared, background };
 }
@@ -80,9 +85,7 @@ export function renderSvgToPng(svg, width = DEFAULT_PNG_WIDTH) {
 
 function collectCustomProperties(source, variables) {
   for (const match of source.matchAll(CUSTOM_PROPERTY)) {
-    if (!variables.has(match[1])) {
-      variables.set(match[1], match[2].trim());
-    }
+    variables.set(match[1], match[2].trim());
   }
 }
 

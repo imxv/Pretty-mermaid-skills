@@ -45,6 +45,16 @@ assert.match(cssLikeLabelPrepared, /var\(--user-label\)/);
 assert.match(cssLikeLabelPrepared, /color-mix\(in srgb, red, blue\)/);
 assert.ok(renderSvgToPng(cssLikeLabelSvg).subarray(0, 8).equals(pngSignature));
 
+const literalBackgroundSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" style="background:#fff"><rect width="10" height="10" fill="#000"/></svg>';
+assert.equal(prepareSvgForPng(literalBackgroundSvg).background, '#fff');
+assert.ok(renderSvgToPng(literalBackgroundSvg, 100).subarray(0, 8).equals(pngSignature));
+
+const stylesheetOverrideSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" style="background:var(--bg)"><style>svg { --bg:#fff; } svg { --bg:#000; }</style></svg>';
+assert.equal(prepareSvgForPng(stylesheetOverrideSvg).background, '#000');
+
+const inlineOverrideSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" style="--bg:#123;background:var(--bg)"><style>svg { --bg:#fff; }</style></svg>';
+assert.equal(prepareSvgForPng(inlineOverrideSvg).background, '#123');
+
 const cliTestDir = mkdtempSync(join(tmpdir(), 'pretty-mermaid-smoke-'));
 const flowchartPath = join(examplesDir, 'flowchart.mmd');
 const xychartPath = join(examplesDir, 'xychart.mmd');

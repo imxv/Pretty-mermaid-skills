@@ -6,6 +6,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Added
+
+- Native Node.js PNG output for single-file and batch rendering, with configurable width and no external converter requirement.
+
 ## [1.0.0] - 2026-08-20
 
 ### Added

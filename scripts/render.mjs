@@ -4,6 +4,7 @@ import { execSync } from 'child_process';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { readFileSync, writeFileSync, existsSync } from 'fs';
+import { DEFAULT_PNG_WIDTH, parsePngWidth, renderSvgToPng } from './png.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const skillRoot = join(__dirname, '..');
@@ -78,6 +79,7 @@ function parseArgs() {
     layerSpacing: 40,
     componentSpacing: 24,
     interactive: false,
+    width: DEFAULT_PNG_WIDTH,
   };
 
   for (let i = 0; i < args.length; i++) {
@@ -108,13 +110,16 @@ function parseArgs() {
       case '--layer-spacing': opts.layerSpacing = parseInt(val); i++; break;
       case '--component-spacing': opts.componentSpacing = parseInt(val); i++; break;
       case '--interactive': opts.interactive = true; break;
+      case '--width':
+        if (val === undefined) throw new Error('--width requires a value.');
+        opts.width = val; i++; break;
       case '--help': case '-h':
         console.log(`Usage: node render.mjs --input <file> [options]
 
 Options:
   -i, --input <file>       Input Mermaid file (.mmd) [required]
-  -o, --output <file>      Output file (default: stdout)
-  -f, --format <fmt>       Output format: svg | ascii (default: svg)
+  -o, --output <file>      Output file (default: stdout; input.png for PNG)
+  -f, --format <fmt>       Output format: svg | png | ascii (default: svg)
   -t, --theme <name>       Theme name (e.g. tokyo-night, dracula)
       --bg <hex>           Background color
       --fg <hex>           Foreground color
@@ -124,7 +129,8 @@ Options:
       --surface <hex>      Node fill tint color
       --border <hex>       Node stroke color
       --font <name>        Font family (default: Inter)
-      --transparent        Transparent background (SVG only)
+      --transparent        Transparent background (SVG and PNG)
+      --width <n>          PNG width in pixels (100-10000, default: 800)
       --use-ascii          Pure ASCII instead of Unicode (ASCII only)
       --padding-x <n>      Horizontal spacing (ASCII only, default: 5)
       --padding-y <n>      Vertical spacing (ASCII only, default: 5)
@@ -147,6 +153,15 @@ Options:
   if (!existsSync(opts.input)) {
     console.error(`Error: Input file not found: ${opts.input}`);
     process.exit(1);
+  }
+
+  if (!['svg', 'png', 'ascii'].includes(opts.format)) {
+    console.error(`Error: Unsupported format: ${opts.format}. Use svg, png, or ascii.`);
+    process.exit(1);
+  }
+
+  if (opts.format === 'png') {
+    opts.width = parsePngWidth(opts.width);
   }
 
   return opts;
@@ -207,7 +222,13 @@ async function main() {
       interactive: opts.interactive,
     });
 
-    if (opts.output) {
+    if (opts.format === 'png') {
+      const outputPath = opts.output || (
+        /\.mmd$/i.test(opts.input) ? opts.input.replace(/\.mmd$/i, '.png') : `${opts.input}.png`
+      );
+      writeFileSync(outputPath, renderSvgToPng(svg, opts.width));
+      console.log(`PNG diagram saved to ${outputPath}`);
+    } else if (opts.output) {
       writeFileSync(opts.output, svg);
       console.log(`SVG diagram saved to ${opts.output}`);
     } else {

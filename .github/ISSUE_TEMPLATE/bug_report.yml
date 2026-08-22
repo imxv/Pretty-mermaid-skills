@@ -27,8 +27,9 @@ body:
       label: Output format
       options:
         - SVG
+        - PNG
         - Unicode or ASCII
-        - Both
+        - Multiple formats
         - Documentation only
     validations:
       required: true

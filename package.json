@@ -17,6 +17,7 @@
     "validate": "node scripts/validate-docs.mjs"
   },
   "dependencies": {
+    "@resvg/resvg-js": "^2.6.2",
     "beautiful-mermaid": "^1.1.3"
   }
 }

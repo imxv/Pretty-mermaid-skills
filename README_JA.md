@@ -4,9 +4,9 @@
 
 **AI エージェントのための美しい Mermaid ダイアグラム**
 
-Mermaid ソースを洗練された SVG とターミナル向け ASCII に変換します。ローカルで動作し、ブラウザーは不要です。
+Mermaid ソースを洗練された SVG、共有しやすい PNG、ターミナル向け ASCII に変換します。ローカルで動作し、ブラウザーは不要です。
 
-![Pretty Mermaid が Mermaid ソースをテーマ付き SVG とターミナル ASCII に変換する例](assets/social-preview.png)
+![Pretty Mermaid が Mermaid ソースをテーマ付き SVG、PNG、ターミナル ASCII に変換する例](assets/social-preview.png)
 
 [![skills.sh](https://skills.sh/b/imxv/pretty-mermaid-skills)](https://www.skills.sh/imxv/pretty-mermaid-skills/pretty-mermaid)
 [![CI](https://github.com/imxv/Pretty-mermaid-skills/actions/workflows/ci.yml/badge.svg)](https://github.com/imxv/Pretty-mermaid-skills/actions/workflows/ci.yml)
@@ -29,13 +29,13 @@ npx skills add imxv/pretty-mermaid-skills@pretty-mermaid -g -y
 ## Pretty Mermaid を選ぶ理由
 
 - **AI エージェント向け**：Claude Code、Cursor、Codex、Gemini CLI などに対応
-- **1 つのソースから 2 形式**：ドキュメント向け SVG とターミナル向け ASCII/Unicode
+- **1 つのソースから 3 形式**：ドキュメント向け SVG、共有向け PNG、ターミナル向け ASCII/Unicode
 - **ブラウザー不要**：Chromium、Puppeteer、DOM に依存せずローカルでレンダリング
 - **柔軟な設定**：15 テーマ、カスタムカラー、6 種類のダイアグラム、バッチ処理
 
 ## ✨ 主な機能
 
-- 📊 **複数形式**：SVG と ASCII/Unicode を出力
+- 📊 **複数形式**：SVG、PNG、ASCII/Unicode を出力
 - 🎨 **豊富なテーマ**：用途に合わせた 15 の組み込みテーマ
 - 📈 **6 種類のダイアグラム**：Flowchart、Sequence、State、Class、ER、XY Chart
 - ⚡ **高速処理**：複数ファイルを並列でバッチレンダリング
@@ -98,6 +98,16 @@ node scripts/render.mjs \
   --theme tokyo-night
 ```
 
+### PNG をレンダリング
+```bash
+node scripts/render.mjs \
+  --input diagram.mmd \
+  --output output.png \
+  --format png \
+  --width 1200 \
+  --theme tokyo-night
+```
+
 ### ディレクトリをバッチレンダリング
 
 ```bash
@@ -118,7 +128,7 @@ node scripts/batch.mjs \
 - `er.mmd` - ER 図
 - `xychart.mmd` - XY チャート（棒グラフと折れ線グラフ）
 
-CJK の状態名、複数行ラベル、`linkStyle`、ELK レイアウト間隔、XY チャートのツールチップ、ANSI カラーのターミナル出力にも対応します。
+PNG は外部コンバーターを使わず Node.js 内で直接生成します。CJK の状態名、複数行ラベル、`linkStyle`、ELK レイアウト間隔、XY チャートのツールチップ、ANSI カラーのターミナル出力にも対応します。
 
 ## 📚 ドキュメント
 

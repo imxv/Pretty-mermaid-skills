@@ -4,9 +4,9 @@
 
 **Beautiful Mermaid diagrams for AI agents**
 
-Turn Mermaid source into polished SVGs and terminal-ready ASCII—locally, without a browser.
+Turn Mermaid source into polished SVGs, shareable PNGs, and terminal-ready ASCII—locally, without a browser.
 
-![Pretty Mermaid converts Mermaid source into themed SVG and terminal ASCII diagrams](assets/social-preview.png)
+![Pretty Mermaid converts Mermaid source into themed SVG, PNG, and terminal ASCII diagrams](assets/social-preview.png)
 
 [![skills.sh](https://skills.sh/b/imxv/pretty-mermaid-skills)](https://www.skills.sh/imxv/pretty-mermaid-skills/pretty-mermaid)
 [![CI](https://github.com/imxv/Pretty-mermaid-skills/actions/workflows/ci.yml/badge.svg)](https://github.com/imxv/Pretty-mermaid-skills/actions/workflows/ci.yml)
@@ -29,13 +29,13 @@ npx skills add imxv/pretty-mermaid-skills@pretty-mermaid -g -y
 ## Why Pretty Mermaid?
 
 - **Made for AI agents**: works with Claude Code, Cursor, Codex, Gemini CLI, and more
-- **One source, two outputs**: polished SVG for docs and ASCII/Unicode for terminals
+- **One source, three outputs**: polished SVG for docs, PNG for sharing, and ASCII/Unicode for terminals
 - **No browser required**: renders locally without Chromium, Puppeteer, or a DOM
 - **Flexible by default**: 15 themes, custom colors, six diagram types, and batch rendering
 
 ## ✨ Features
 
-- 📊 **Multi-format Support**: SVG and ASCII rendering export
+- 📊 **Multi-format Support**: SVG, PNG, and ASCII rendering export
 - 🎨 **Rich Themes**: 15 built-in themes for different scenarios
 - 📈 **Six Diagram Types**: Flowchart, Sequence, State, Class, ER, and XY charts
 - ⚡ **High Performance**: Batch parallel rendering
@@ -100,6 +100,16 @@ node scripts/render.mjs \
   --theme tokyo-night
 ```
 
+### Render PNG
+```bash
+node scripts/render.mjs \
+  --input diagram.mmd \
+  --output output.png \
+  --format png \
+  --width 1200 \
+  --theme tokyo-night
+```
+
 ### Batch Render
 ```bash
 node scripts/batch.mjs \
@@ -118,7 +128,7 @@ Check the 6 template files in `assets/example_diagrams/`:
 - `er.mmd` - ER Diagram
 - `xychart.mmd` - XY Chart (bar and line)
 
-The renderer also supports CJK state names, multiline labels, `linkStyle`, configurable ELK layout spacing, interactive XY chart tooltips, and ANSI-colored terminal output.
+PNG output is rendered directly in Node.js with no external converter required. The renderer also supports CJK state names, multiline labels, `linkStyle`, configurable ELK layout spacing, interactive XY chart tooltips, and ANSI-colored terminal output.
 
 ## 📚 Documentation
 

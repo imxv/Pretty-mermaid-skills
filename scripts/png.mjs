@@ -30,25 +30,23 @@ export function prepareSvgForPng(svg) {
 
   const stylesheets = [...svg.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/gi)]
     .map(match => stripCssImports(match[1]));
-  const rootVariables = new Map();
-  const scopedVariables = new Map();
+  const rootDeclarations = new Map();
+  let declarationOrder = 0;
   for (const css of stylesheets) {
-    collectRootCustomProperties(css, rootVariables);
-    collectScopedCustomProperties(css, scopedVariables);
+    declarationOrder = collectRootCustomProperties(css, rootDeclarations, declarationOrder);
   }
+  const rootVariables = new Map(
+    [...rootDeclarations].map(([name, declaration]) => [name, declaration.value]),
+  );
   const rootStyle = rootTag.match(/\sstyle=(['"])(.*?)\1/i)?.[2] ?? '';
   collectCustomProperties(rootStyle, rootVariables);
+  rejectScopedInlineCustomProperties(svg);
   const resolveRootVariable = createVariableResolver(rootVariables);
 
   const prepared = mapCssContexts(
     svg,
-    css => resolveStylesheet(css, rootVariables, scopedVariables),
-    (name, value) => {
-      const variables = new Map(rootVariables);
-      if (name.toLowerCase() === 'style') collectCustomProperties(value, variables);
-      const resolvedValue = resolveCssValue(value, createVariableResolver(variables));
-      return resolvedValue.replace(CUSTOM_PROPERTY, '');
-    },
+    css => resolveCssValue(stripCssImports(css), resolveRootVariable).replace(CUSTOM_PROPERTY, ''),
+    (_, value) => resolveCssValue(value, resolveRootVariable).replace(CUSTOM_PROPERTY, ''),
   );
 
   let unresolved;
@@ -89,25 +87,43 @@ function collectCustomProperties(source, variables) {
   }
 }
 
-function collectRootCustomProperties(css, variables) {
+function collectRootCustomProperties(css, declarations, startOrder) {
+  let order = startOrder;
   for (const match of css.matchAll(CSS_RULE)) {
     const selectors = match[1].split(',').map(selector => selector.trim());
-    if (selectors.some(isRootSelector)) {
-      collectCustomProperties(match[2], variables);
+    const customProperties = [...match[2].matchAll(CUSTOM_PROPERTY)];
+    if (customProperties.length === 0) continue;
+
+    const specificity = Math.max(...selectors.map(rootSelectorSpecificity));
+    if (specificity < 0) {
+      throw new Error('PNG conversion supports CSS custom properties only on the root svg element.');
+    }
+
+    for (const property of customProperties) {
+      const candidate = { value: property[2].trim(), specificity, order: order++ };
+      const current = declarations.get(property[1]);
+      if (
+        !current ||
+        candidate.specificity > current.specificity ||
+        (candidate.specificity === current.specificity && candidate.order > current.order)
+      ) {
+        declarations.set(property[1], candidate);
+      }
     }
   }
+  return order;
 }
 
-function isRootSelector(selector) {
-  return selector === 'svg' || selector === ':root';
+function rootSelectorSpecificity(selector) {
+  if (selector === ':root') return 10;
+  if (selector === 'svg') return 1;
+  return -1;
 }
 
-function collectScopedCustomProperties(css, scopedVariables) {
-  for (const match of css.matchAll(CSS_RULE)) {
-    for (const selector of match[1].split(',').map(value => value.trim())) {
-      if (isRootSelector(selector)) continue;
-      if (!scopedVariables.has(selector)) scopedVariables.set(selector, new Map());
-      collectCustomProperties(match[2], scopedVariables.get(selector));
+function rejectScopedInlineCustomProperties(svg) {
+  for (const match of svg.matchAll(/<([a-z][\w:-]*)\b[^>]*\sstyle=(['"])(.*?)\2[^>]*>/gi)) {
+    if (match[1].toLowerCase() !== 'svg' && [...match[3].matchAll(CUSTOM_PROPERTY)].length > 0) {
+      throw new Error('PNG conversion supports CSS custom properties only on the root svg element.');
     }
   }
 }
@@ -128,26 +144,6 @@ function createVariableResolver(variables) {
     resolved.set(name, value);
     return value;
   };
-}
-
-function resolveStylesheet(css, rootVariables, scopedVariables) {
-  const withoutImports = stripCssImports(css);
-
-  return withoutImports.replace(CSS_RULE, (_, selectorList, body) => (
-    selectorList
-      .split(',')
-      .map(value => value.trim())
-      .map(selector => {
-        const variables = new Map(rootVariables);
-        for (const [name, value] of scopedVariables.get(selector) ?? []) {
-          variables.set(name, value);
-        }
-        const resolvedBody = resolveCssValue(body, createVariableResolver(variables))
-          .replace(CUSTOM_PROPERTY, '');
-        return `${selector} {${resolvedBody}}`;
-      })
-      .join('\n')
-  ));
 }
 
 function stripCssImports(css) {

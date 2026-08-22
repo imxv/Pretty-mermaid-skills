@@ -57,10 +57,14 @@ const inlineOverrideSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="10" he
 assert.equal(prepareSvgForPng(inlineOverrideSvg).background, '#123');
 assertRenderedPixel(inlineOverrideSvg, [17, 34, 51, 255]);
 
-const selectorScopeSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" style="background:var(--bg)"><style>svg { --bg:#fff; } rect { --bg:#000; fill:var(--bg); }</style><rect width="5" height="5"/></svg>';
-const selectorScopePrepared = prepareSvgForPng(selectorScopeSvg);
-assert.equal(selectorScopePrepared.background, '#fff');
-assert.match(selectorScopePrepared.svg, /rect \{\s*fill:#000;/);
+const rootSpecificitySvg = '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" style="background:var(--bg)"><style>:root { --bg:#fff; } svg { --bg:#000; }</style></svg>';
+assert.equal(prepareSvgForPng(rootSpecificitySvg).background, '#fff');
+
+const scopedVariablesSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"><style>.theme { --accent:#f00; } .node { fill:var(--accent); }</style><rect class="theme node"/></svg>';
+assert.throws(
+  () => prepareSvgForPng(scopedVariablesSvg),
+  /custom properties only on the root svg element/,
+);
 
 const mixedCaseSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" style="--bg:#fff;background:VAR(--bg)"><style>rect { fill:COLOR-MIX(in srgb, #fff 50%, #000); }</style><rect width="5" height="5" fill="myvar(--bg)" filter="--var(--bg)"/></svg>';
 const mixedCasePrepared = prepareSvgForPng(mixedCaseSvg);
